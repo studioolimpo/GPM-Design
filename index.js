@@ -430,8 +430,10 @@ function runSplit(next) {
 
   const doSplit = () => {
     lineTargets.forEach((el) => {
-      if (!el.children.length) return;
-      const split = new SplitText(el.children, {
+      const children = el.children;
+      if (!children.length) return;
+
+      const split = new SplitText(children, {
         linesClass: "line",
         type: "lines",
         autoSplit: true,
@@ -442,11 +444,18 @@ function runSplit(next) {
     });
   };
 
-  if (isSafari) {
-    setTimeout(doSplit, 30); // delay minimo per layout reflow
-  } else {
-    doSplit();
-  }
+  // Aspetta caricamento dei font
+  document.fonts.ready.then(() => {
+    // Safari fix: reflow + delay
+    if (isSafari) {
+      requestAnimationFrame(() => {
+        document.body.offsetHeight;
+        setTimeout(doSplit, 50);
+      });
+    } else {
+      doSplit();
+    }
+  });
 }
 
 /*---------- CURSOR CUSTOM -------*/
