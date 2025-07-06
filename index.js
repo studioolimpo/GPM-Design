@@ -30,6 +30,7 @@ let isMobileLandscape = window.innerWidth < 768;
 let isTablet = window.innerWidth < 992;
 let previousSlug = document.documentElement.getAttribute('data-wf-item-slug');
 let previousNamespace = null;
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 // 1. Inizializzazione Lenis
 function initLenis() {
@@ -427,19 +428,25 @@ function runSplit(next) {
   splitInstances.forEach(split => split.revert());
   splitInstances = [];
 
-  lineTargets.forEach((el) => {
-    if (!el.children.length) return;
-    const split = new SplitText(el.children, {
-      linesClass: "line",
-      type: "lines",
-      autoSplit: true,
-      mask: "lines",
-      clearProps: "all",
+  const doSplit = () => {
+    lineTargets.forEach((el) => {
+      if (!el.children.length) return;
+      const split = new SplitText(el.children, {
+        linesClass: "line",
+        type: "lines",
+        autoSplit: true,
+        mask: "lines",
+        clearProps: "all",
+      });
+      splitInstances.push(split);
     });
+  };
 
-    splitInstances.push(split);
-
-  });
+  if (isSafari) {
+    setTimeout(doSplit, 30); // delay minimo per layout reflow
+  } else {
+    doSplit();
+  }
 }
 
 /*---------- CURSOR CUSTOM -------*/
