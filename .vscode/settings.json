@@ -1,0 +1,9 @@
+{
+  "liveServer.settings.https": {
+    "enable": true,
+    "cert": "/Users/lorenzomala/.ssl/cert.pem",
+    "key": "/Users/lorenzomala/.ssl/key.pem"
+  },
+  "liveServer.settings.host": "127.0.0.1",
+  "liveServer.settings.port": 5500
+}

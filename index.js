@@ -30,7 +30,11 @@ let isMobileLandscape = window.innerWidth < 768;
 let isTablet = window.innerWidth < 992;
 let previousSlug = document.documentElement.getAttribute('data-wf-item-slug');
 let previousNamespace = null;
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+  document.documentElement.classList.add("safari");
+}
+
 
 // 1. Inizializzazione Lenis
 function initLenis() {
@@ -420,41 +424,35 @@ function initLoader() {
 }
 
 
-/*------- SPLIT TEXT ------*/
 function runSplit(next) {
-  lineTargets = next.querySelectorAll("[data-split-line='true']");
+  next = next || document;
 
-  // Revert precedenti
-  splitInstances.forEach(split => split.revert());
+  // Seleziona tutti gli elementi da splittare in linee
+  const lineTargets = next.querySelectorAll("[data-split-line='true']");
+
+  // Revert degli eventuali split precedenti
+  if (typeof splitInstances !== "undefined" && splitInstances.length) {
+    splitInstances.forEach(split => split.revert());
+  }
+
+  // Reinizializza array globale degli split
   splitInstances = [];
 
-  const doSplit = () => {
+  // Attendi che i font siano pronti per evitare problemi di misurazione
+  document.fonts.ready.then(() => {
     lineTargets.forEach((el) => {
-      const children = el.children;
-      if (!children.length) return;
+      if (!el.children.length) return;
 
-      const split = new SplitText(children, {
+      const split = new SplitText(el.children, {
         linesClass: "line",
         type: "lines",
         autoSplit: true,
         mask: "lines",
         clearProps: "all",
       });
+
       splitInstances.push(split);
     });
-  };
-
-  // Aspetta caricamento dei font
-  document.fonts.ready.then(() => {
-    // Safari fix: reflow + delay
-    if (isSafari) {
-      requestAnimationFrame(() => {
-        document.body.offsetHeight;
-        setTimeout(doSplit, 50);
-      });
-    } else {
-      doSplit();
-    }
   });
 }
 
