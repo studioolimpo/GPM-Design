@@ -1476,18 +1476,18 @@ barba.hooks.after((data) => {
 });
 
 
-$(document).ready(function () {
-  $("a").on("click", function (e) {
-    var destination = $(this).attr("href");
-    var currentLocation = window.location.pathname;
+// $(document).ready(function () {
+//   $("a").on("click", function (e) {
+//     var destination = $(this).attr("href");
+//     var currentLocation = window.location.pathname;
 
-    if (
-      destination === currentLocation ||
-      destination === currentLocation + "#" ||
-      destination === currentLocation + window.location.search
-    ) {
-      e.preventDefault();
+//     if (
+//       destination === currentLocation ||
+//       destination === currentLocation + "#" ||
+//       destination === currentLocation + window.location.search
+//     ) {
+//       e.preventDefault();
 
-    }
-  });
-});
+//     }
+//   });
+// });
