@@ -218,24 +218,25 @@ function initMenu() {
     });
 
     $("a").on("click", function (e) {
+  const href = $(this).attr("href");
+  const isInternal = $(this).prop("hostname") === window.location.host;
+  const isNotHash = href.indexOf("#") === -1;
+  const isNotBlank = $(this).attr("target") !== "_blank";
+  const isSamePage = window.location.pathname === href;
+  const isNavOpen = navWrap.getAttribute("data-nav") === "open";
 
-        if (
-            $(this).prop("hostname") === window.location.host &&
-            $(this).attr("href").indexOf("#") === -1 &&
-            $(this).attr("target") !== "_blank" &&
-            navWrap.getAttribute("data-nav") === "open"
-        ) {
+  if (isInternal && isNotHash && isNotBlank && isNavOpen) {
+    e.preventDefault(); // sempre, altrimenti barba parte comunque
 
-            if (window.location.pathname === $(this).attr("href")) {
-                closeNav();
-                lenis.start();
-            } else {
-                e.preventDefault();
-                lenis.start();
-                transitionNav();
-            }
-        }
-    });
+    if (isSamePage) {
+      closeNav();
+      lenis.start();
+    } else {
+      transitionNav();
+      // barba.go(href); <-- NO! lascia a barba fare il suo lavoro
+    }
+  }
+});
 
 const listItems = navWrap.querySelectorAll(".nav_menu_link");
 const imageItems = document.querySelectorAll(".nav_visual_item");
@@ -1474,20 +1475,3 @@ barba.hooks.after((data) => {
         lenis.resize();
       }
 });
-
-
-// $(document).ready(function () {
-//   $("a").on("click", function (e) {
-//     var destination = $(this).attr("href");
-//     var currentLocation = window.location.pathname;
-
-//     if (
-//       destination === currentLocation ||
-//       destination === currentLocation + "#" ||
-//       destination === currentLocation + window.location.search
-//     ) {
-//       e.preventDefault();
-
-//     }
-//   });
-// });
