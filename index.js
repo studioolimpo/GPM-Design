@@ -639,7 +639,7 @@ function initHeroProjectsAnimation() {
     yPercent: 0,
     duration: 0.7,
     ease: "power3.out",
-    delay: ranLoader ? 0.4 : 2.8,
+    delay: ranLoader ? 0.1 : 2.8,
     stagger: { amount: 0.2 },
   });
 
@@ -719,7 +719,7 @@ function initHeroSingleProjectAnimation(next) {
     yPercent: 110,
     duration: 0.9,
     ease: "power3.out",
-    delay: ranLoader ? 0.2 : 2.5,
+    delay: ranLoader ? 0 : 2.5,
     stagger: { amount: 0.2 },
   });
 
@@ -799,7 +799,7 @@ function initHeroStudioAnimation() {
   tl.from(layout, {
     y: "10rem",
     duration: 0.5,
-    delay: ranLoader ? 0.3 : 3.0,
+    delay: ranLoader ? 0 : 3.0,
     ease: "power3.out"
   });
 
@@ -862,7 +862,7 @@ function initHeroProcessAnimation() {
     yPercent: 110,
     duration: 0.7,
     ease: "power3.out",
-    delay: ranLoader ? 0.4 : 2.8,
+    delay: ranLoader ? 0.1 : 2.8,
     stagger: { amount: 0.2 },
   });
 
@@ -1338,20 +1338,18 @@ barba.init({
     if (!ranLoader) {
       initFirstLoading();
       cmsNest();
-
       runSplit(document);
-      gsap.delayedCall(0.1, initHeroHomeAnimation, [document]);
-      gsap.delayedCall(0.2, resetTheme, [document]);
-    } else {
+
+    }
       runSplit(next);
       gsap.delayedCall(0.1, initHeroHomeAnimation, [next]);
       gsap.delayedCall(0.2, resetTheme, [next]);
-    }
+    
   },
 
       afterEnter(data) {
       let next = data.next.container;
-      gsap.delayedCall(0.1, initHomeAnimations, [next]);
+      gsap.delayedCall(0.3, initHomeAnimations, [next]);
       }
     },
     {
@@ -1362,7 +1360,7 @@ barba.init({
         if (!ranLoader) {
           initFirstLoading();
           cmsNest();
-          runSplit(next);
+          runSplit(document);
         }
           cmsNest();
           runSplit(next);
@@ -1371,7 +1369,7 @@ barba.init({
       },
       afterEnter(data) {
         let next = data.next.container;
-        initProjectsAnimations(next);
+        gsap.delayedCall(0.3, initProjectsAnimations, [next]);
       }
     },
     {
@@ -1395,23 +1393,19 @@ barba.init({
         const fromOutside = currentNamespace !== 'single-project';
         const slugChanged = nextSlug !== previousSlug;
 
-        // console.log("🔁 Previous namespace:", currentNamespace);
-        // console.log("🔁 Previous slug:", previousSlug);
-        // console.log("➡️ Next slug:", nextSlug);
-
         if (!ranLoader) {
           initFirstLoading();
           cmsNest();
-          runSplit(next);
+          runSplit(document);
+          gsap.delayedCall(0.7, () => initHeroSingleProjectAnimation(document));
+          gsap.delayedCall(0.2, () => resetTheme(nextContainer));
         }
 
         if (fromOutside || slugChanged) {
-          // console.log("✅ Animazioni CMS HERO");
-          document.fonts.ready.then(() => {
           runSplit(nextContainer);
-          gsap.delayedCall(1.2, () => initHeroSingleProjectAnimation(nextContainer));
+          gsap.delayedCall(0.6, () => initHeroSingleProjectAnimation(nextContainer));
           gsap.delayedCall(0.2, () => resetTheme(nextContainer));
-          });
+          
         }
 
         previousSlug = nextSlug;
@@ -1420,7 +1414,7 @@ barba.init({
 
       afterEnter(data) {
         const next = data.next.container;
-        gsap.delayedCall(0.5, initSingleProjectAnimations, [next]);
+        gsap.delayedCall(1, initSingleProjectAnimations, [next]);
       }
     },
     {
@@ -1430,12 +1424,12 @@ barba.init({
         if (!ranLoader) {
           initFirstLoading();
         }
-        runSplit(next);
-        gsap.delayedCall(0.1, initHeroStudioAnimation, [next]);
+        runSplit(document);
+        gsap.delayedCall(0.2, initHeroStudioAnimation, [next]);
       },
       afterEnter(data) {
         let next = data.next.container;
-        gsap.delayedCall(0.1, initStudioAnimations, [next]);
+        gsap.delayedCall(0.2, initStudioAnimations, [next]);
       }
     },
     {
@@ -1444,7 +1438,7 @@ barba.init({
         let next = data.next.container;
         if (!ranLoader) {
           initFirstLoading();
-          runSplit(next);
+          runSplit(document);
         }
         runSplit(next);
         gsap.delayedCall(0.3, initHeroProcessAnimation, [next]);
@@ -1452,7 +1446,7 @@ barba.init({
       },
       afterEnter(data) {
         let next = data.next.container;
-        gsap.delayedCall(0.1, initProcessAnimations, [next]);
+        gsap.delayedCall(0.3, initProcessAnimations, [next]);
       }
     },
     {
