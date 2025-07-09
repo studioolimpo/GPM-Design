@@ -1361,15 +1361,8 @@ barba.init({
           
           gsap.delayedCall(0.1, initHeroProjectsAnimation, [next]);
           gsap.delayedCall(0.2, resetTheme, [next]);
-    }
-        
-        if (!ranLoader) {
-          initFirstLoading();
-          cmsNest();
         }
-          runSplit(next);
-          gsap.delayedCall(0.1, initHeroProjectsAnimation, [next]);
-          gsap.delayedCall(0.2, resetTheme, [next]);
+
       },
       afterEnter(data) {
         let next = data.next.container;
@@ -1400,6 +1393,7 @@ barba.init({
         if (!ranLoader) {
           initFirstLoading();
           cmsNest();
+          runSplit(nextContainer);
         }
 
         if (fromOutside || slugChanged) {
@@ -1424,9 +1418,13 @@ barba.init({
         let next = data.next.container;
         if (!ranLoader) {
           initFirstLoading();
+          runSplit(next);
+          gsap.delayedCall(0.1, initHeroStudioAnimation, [next]);
+        } else {
+          runSplit(next);
+          gsap.delayedCall(0.1, initHeroStudioAnimation, [next]);
         }
-        runSplit(next);
-        gsap.delayedCall(0.1, initHeroStudioAnimation, [next]);
+        
       },
       afterEnter(data) {
         let next = data.next.container;
@@ -1439,10 +1437,14 @@ barba.init({
         let next = data.next.container;
         if (!ranLoader) {
           initFirstLoading();
+          runSplit(next);
+
+          gsap.delayedCall(0.1, initHeroProcessAnimation, [next]);
+        } else {
+          runSplit(next);
+          gsap.delayedCall(0.1, initHeroProcessAnimation, [next]);
+          gsap.delayedCall(0.2, resetTheme, [next]);
         }
-        runSplit(next);
-        gsap.delayedCall(0.1, initHeroProcessAnimation, [next]);
-        gsap.delayedCall(0.2, resetTheme, [next]);
       },
       afterEnter(data) {
         let next = data.next.container;
@@ -1455,10 +1457,18 @@ barba.init({
         let next = data.next.container;
         if (!ranLoader) {
           initFirstLoading();
+          runSplit(next);
+
+          gsap.delayedCall(0.1, initHeroContactAnimation, [next]);
+
+        } else {
+
+          runSplit(next);
+          gsap.delayedCall(0.1, initHeroContactAnimation, [next]);
+          gsap.delayedCall(0.2, resetTheme, [next]);
+
         }
-        runSplit(next);
-        gsap.delayedCall(0.1, initHeroContactAnimation, [next]);
-        gsap.delayedCall(0.2, resetTheme, [next]);
+        
       },
       afterEnter(data) {
         let next = data.next.container;
@@ -1472,10 +1482,15 @@ barba.init({
         let next = data.next.container;
         if (!ranLoader) {
           initFirstLoading();
+          runSplit(document);
+
+          gsap.delayedCall(0.1, initHero404Animation, [next]);
+        } else {
+          runSplit(next);
+          gsap.delayedCall(0.1, initHero404Animation, [next]);
+          gsap.delayedCall(0.2, resetTheme, [next]);
         }
-        runSplit(next);
-        gsap.delayedCall(0.1, initHero404Animation, [next]);
-        gsap.delayedCall(0.2, resetTheme, [next]);
+        
       },
       afterEnter(data) {
         let next = data.next.container;
