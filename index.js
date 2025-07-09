@@ -175,8 +175,8 @@ function initMenu() {
       .set(navTransition, { autoAlpha: 0 }, "<")
       .fromTo(menuButtonLayout, { yPercent: 0 }, { yPercent: -120, duration: 0.7, ease: "power3.out" }, "<")
       .fromTo(overlay, { autoAlpha: 0 }, { autoAlpha: 1, duration: 1 }, "<")
-      .fromTo(bgPanels, { yPercent: -101 }, { yPercent: 0, duration: 1, ease: bgPanelEase }, "<")
-      .fromTo(main, { y: 0 }, { y: "10rem", duration: 1, ease: bgPanelEase }, "<")
+      .fromTo(bgPanels, { yPercent: -101 }, { yPercent: 0, duration: 1, ease: "power3.out" }, "<")
+      .fromTo(main, { y: 0 }, { y: "10rem", duration: 1, ease: "power3.out" }, "<")
       .fromTo(menuList, { yPercent: 20 }, { yPercent: 0 }, "<0.4")
       .fromTo(menuDivider, { opacity: 0, transformOrigin: "left" }, { opacity: 1, stagger: 0.01, duration: 0.7 }, "<")
       .fromTo(menuIndexs, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.7, stagger: 0.05 }, "<")
@@ -217,60 +217,60 @@ function initMenu() {
   });
 
   $("a").on("click", function (e) {
-  const href = $(this).attr("href");
-  const isSameHost = $(this).prop("hostname") === window.location.host;
-  const isNotHash = href.indexOf("#") === -1;
-  const isNotBlank = $(this).attr("target") !== "_blank";
-  const isNavOpen = navWrap.getAttribute("data-nav") === "open";
+    const href = $(this).attr("href");
+    const isSameHost = $(this).prop("hostname") === window.location.host;
+    const isNotHash = href.indexOf("#") === -1;
+    const isNotBlank = $(this).attr("target") !== "_blank";
+    const isNavOpen = navWrap.getAttribute("data-nav") === "open";
 
-  // Normalize pathname (rimuove trailing slash)
-  const currentPath = window.location.pathname.replace(/\/$/, "");
-  const targetPath = new URL(href, window.location.origin).pathname.replace(/\/$/, "");
+    const currentPath = window.location.pathname.replace(/\/$/, "");
+    const targetPath = new URL(href, window.location.origin).pathname.replace(/\/$/, "");
 
-  if (isSameHost && isNotHash && isNotBlank && isNavOpen) {
-    if (currentPath === targetPath) {
-      e.preventDefault(); // ✨ BLOCCA LA TRANSIZIONE
-      closeNav();         // ✅ chiude solo il menu
-      lenis.start();      // facoltativo
-    } else {
-      e.preventDefault();
-      transitionNav();    // ✅ trigger transizione
-      // Barba gestirà il resto
+    if (isSameHost && isNotHash && isNotBlank && isNavOpen) {
+      if (currentPath === targetPath) {
+        e.preventDefault();
+        closeNav();
+        lenis.start();
+      } else {
+        e.preventDefault();
+        transitionNav();
+      }
+    }
+  });
+
+  // 👉 Animazione hover preview solo su dispositivi con hover attivo
+  if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    const listItems = navWrap.querySelectorAll(".nav_menu_link");
+    const imageItems = document.querySelectorAll(".nav_visual_item");
+
+    if (listItems.length && imageItems.length) {
+      gsap.set(imageItems, { autoAlpha: 0 });
+
+      listItems.forEach((listItem, i) => {
+        listItem.addEventListener("mouseenter", () => {
+          imageItems.forEach((img, index) => {
+            gsap.killTweensOf(img);
+            gsap.to(img, {
+              autoAlpha: index === i ? 1 : 0,
+              duration: 0.5,
+              overwrite: true
+            });
+          });
+        });
+
+        listItem.addEventListener("mouseleave", () => {
+          imageItems.forEach((img) => {
+            gsap.killTweensOf(img);
+            gsap.to(img, {
+              autoAlpha: 0,
+              duration: 0.3,
+              overwrite: true
+            });
+          });
+        });
+      });
     }
   }
-});
-
-
-  // const listItems = navWrap.querySelectorAll(".nav_menu_link");
-  // const imageItems = document.querySelectorAll(".nav_visual_item");
-
-  // if (listItems.length && imageItems.length) {
-  //   gsap.set(imageItems, { autoAlpha: 0 });
-
-  //   listItems.forEach((listItem, i) => {
-  //     listItem.addEventListener("mouseenter", () => {
-  //       imageItems.forEach((img, index) => {
-  //         gsap.killTweensOf(img);
-  //         gsap.to(img, {
-  //           autoAlpha: index === i ? 1 : 0,
-  //           duration: 0.5,
-  //           overwrite: true
-  //         });
-  //       });
-  //     });
-
-  //     listItem.addEventListener("mouseleave", () => {
-  //       imageItems.forEach((img) => {
-  //         gsap.killTweensOf(img);
-  //         gsap.to(img, {
-  //           autoAlpha: 0,
-  //           duration: 0.3,
-  //           overwrite: true
-  //         });
-  //       });
-  //     });
-  //   });
-  // }
 }
 
 /*------- FOOTER REVEAL ------*/
