@@ -502,61 +502,69 @@ function initDynamicCurrentYear() {
 }
 
 /*------ SUBMIT FORM TRIGGER -----*/
-function SubmitSuccessPopup() {
-  const trigger = document.querySelector(".form_main_trigger");
+function SubmitSuccessPopup(formSelector = 'form[name="Email Form"]') {
   const overlay = document.querySelector(".form_popup_wrap");
   const panel = overlay?.querySelectorAll(".form_popup_bg");
   const inner = overlay?.querySelectorAll(".form_popup_inner");
-  const form = document.querySelector("form");
+
+  const form = document.querySelector(formSelector);
   const successBlock = document.querySelector(".w-form-done");
 
-  if (!trigger || !overlay || !panel || !inner || !form || !successBlock) return;
+  if (!form || !successBlock || !overlay || !panel || !inner) {
+    console.warn("Missing required elements for SubmitSuccessPopup");
+    return;
+  }
 
-  trigger.addEventListener("click", (e) => {
-   //e.preventDefault(); // evita che Webflow lo tratti come link
+  form.addEventListener("submit", () => {
+    const intervalId = setInterval(() => {
+      const isVisible = window.getComputedStyle(successBlock).display === "block";
+      if (isVisible) {
+        clearInterval(intervalId);
 
-    // 🔒 BLOCCA Webflow dallo svuotare tutto
-    successBlock.style.display = "none";
-    form.style.display = "flex";
+        // Nasconde il blocco di successo e riporta il form in display
+        successBlock.style.display = "none";
+        form.style.display = "flex";
 
-    if (lenis) lenis.stop();
+        if (lenis) lenis.stop();
 
-    gsap.set(overlay, {
-      display: "flex",
-      visibility: "visible",
-      yPercent: 0,
-    });
+        gsap.set(overlay, {
+          display: "flex",
+          visibility: "visible",
+          yPercent: 0,
+        });
 
-    gsap.set(inner, { opacity: 0 });
+        gsap.set(inner, { opacity: 0 });
 
-    const tl = gsap.timeline();
+        const tl = gsap.timeline();
 
-    tl.fromTo(panel, { yPercent: -101 }, { yPercent: 0, duration: 1, ease: bgPanelEase });
+        tl.fromTo(panel, { yPercent: -101 }, { yPercent: 0, duration: 1, ease: bgPanelEase });
 
-    tl.to(inner, {
-      opacity: 1,
-      duration: 0.9,
-      stagger: 0.07,
-    }, "<0.5");
+        tl.to(inner, {
+          opacity: 1,
+          duration: 0.9,
+          stagger: 0.07,
+        }, "<0.5");
 
-    tl.to(overlay, {
-      duration: 1.1,
-      ease: bgPanelEase,
-      yPercent: -101,
-      delay: 1.6,
-      onStart: () => {
-        if (lenis) lenis.start();
-        if (window.barba) {
-          barba.go("/");
-          cmsNest();
-        } else {
-          window.location.href = "/";
-        }
-      },
-      onComplete: () => {
-        tl.set(overlay, { display: "none" });
+        tl.to(overlay, {
+          duration: 1.1,
+          ease: bgPanelEase,
+          yPercent: -101,
+          delay: 1.6,
+          onStart: () => {
+            if (lenis) lenis.start();
+            if (window.barba) {
+              barba.go("/");
+              cmsNest();
+            } else {
+              window.location.href = "/";
+            }
+          },
+          onComplete: () => {
+            tl.set(overlay, { display: "none" });
+          }
+        });
       }
-    });
+    }, 100);
   });
 }
 
