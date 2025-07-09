@@ -464,7 +464,6 @@ function runSplit(next) {
       splitInstances.push(split);
     });
 
-    initLineReveal(next);
   });
 }
 
@@ -1357,7 +1356,9 @@ barba.init({
         if (!ranLoader) {
           initFirstLoading();
           cmsNest();
+          runSplit(next);
         }
+          cmsNest();
           runSplit(next);
           gsap.delayedCall(0.1, initHeroProjectsAnimation, [next]);
           gsap.delayedCall(0.2, resetTheme, [next]);
@@ -1395,6 +1396,7 @@ barba.init({
         if (!ranLoader) {
           initFirstLoading();
           cmsNest();
+          runSplit(next);
         }
 
         if (fromOutside || slugChanged) {
