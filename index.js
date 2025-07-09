@@ -502,71 +502,59 @@ function initDynamicCurrentYear() {
 }
 
 /*------ SUBMIT FORM TRIGGER -----*/
-function SubmitSuccessPopup(formSelector = 'form[name="Email Form"]') {
+function SubmitSuccessPopup() {
   const overlay = document.querySelector(".form_popup_wrap");
   const panel = overlay?.querySelectorAll(".form_popup_bg");
   const inner = overlay?.querySelectorAll(".form_popup_inner");
+  const form = document.querySelector("form");
 
-  const form = document.querySelector(formSelector);
-  const successBlock = document.querySelector(".w-form-done");
+  if (!overlay || !panel || !inner || !form) return;
 
-  if (!form || !successBlock || !overlay || !panel || !inner) {
-    console.warn("Missing required elements for SubmitSuccessPopup");
-    return;
-  }
+  $(document).on("ajaxComplete", function () {
+    // Nasconde il messaggio Webflow e riporta il form
+    form.style.display = "flex";
 
-  form.addEventListener("submit", () => {
-    const intervalId = setInterval(() => {
-      const isVisible = window.getComputedStyle(successBlock).display === "block";
-      if (isVisible) {
-        clearInterval(intervalId);
+    if (lenis) lenis.stop();
 
-        // Nasconde il blocco di successo e riporta il form in display
-        successBlock.style.display = "none";
-        form.style.display = "flex";
+    gsap.set(overlay, {
+      display: "flex",
+      visibility: "visible",
+      yPercent: 0,
+    });
 
-        if (lenis) lenis.stop();
+    gsap.set(inner, { opacity: 0 });
 
-        gsap.set(overlay, {
-          display: "flex",
-          visibility: "visible",
-          yPercent: 0,
-        });
+    const tl = gsap.timeline();
 
-        gsap.set(inner, { opacity: 0 });
+    tl.fromTo(panel, { yPercent: -101 }, { yPercent: 0, duration: 1, ease: bgPanelEase });
 
-        const tl = gsap.timeline();
+    tl.to(inner, {
+      opacity: 1,
+      duration: 0.9,
+      stagger: 0.07,
+    }, "<0.5");
 
-        tl.fromTo(panel, { yPercent: -101 }, { yPercent: 0, duration: 1, ease: bgPanelEase });
-
-        tl.to(inner, {
-          opacity: 1,
-          duration: 0.9,
-          stagger: 0.07,
-        }, "<0.5");
-
-        tl.to(overlay, {
-          duration: 1.1,
-          ease: bgPanelEase,
-          yPercent: -101,
-          delay: 1.6,
-          onStart: () => {
-            if (lenis) lenis.start();
-            if (window.barba) {
-              barba.go("/");
-              cmsNest();
-            } else {
-              window.location.href = "/";
-            }
-          },
-          onComplete: () => {
-            tl.set(overlay, { display: "none" });
-          }
-        });
+    tl.to(overlay, {
+      duration: 1.1,
+      ease: bgPanelEase,
+      yPercent: -101,
+      delay: 1.6,
+      onStart: () => {
+        if (lenis) lenis.start();
+        if (window.barba) {
+          barba.go("/");
+          cmsNest();
+        } else {
+          window.location.href = "/";
+        }
+      },
+      onComplete: () => {
+        tl.set(overlay, { display: "none" });
       }
-    }, 100);
+    });
   });
 }
+
 
 /*---------- SIGNATURE -------*/
 function Signature() {
@@ -592,27 +580,6 @@ function addCommaBetweenTwoTags(next) {
       firstTag.appendChild(commaSpan);
     }
   });
-}
-
-
-
-/*----- TRIGGER SUBMIT ----*/
-function observeWFormDone(callback) {
-  const target = document.querySelector(".w-form-done");
-  if (!target) {
-    console.warn("Elemento .w-form-done non trovato");
-    return;
-  }
-
-  const observer = new MutationObserver(() => {
-    const isVisible = window.getComputedStyle(target).display === "block";
-    if (isVisible) {
-      observer.disconnect();
-      callback();
-    }
-  });
-
-  observer.observe(target, { attributes: true, attributeFilter: ["style"] });
 }
   
 
@@ -1482,10 +1449,8 @@ barba.init({
       },
       afterEnter(data) {
         let next = data.next.container;
+        gsap.delayedCall(0.1, SubmitSuccessPopup, [next]);
         gsap.delayedCall(0.2, initContactAnimations, [next]);
-        gsap.delayedCall(0.2, () => {
-          observeWFormDone(SubmitSuccessPopup);
-        });
       }
     },
     {
