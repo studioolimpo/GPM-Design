@@ -143,80 +143,81 @@ function resetScroll() {
 
 /*------- MEGA MENU ------*/
 function initMenu() {
-  CustomEase.create("main", "0.33, 0, 0.13, 1");
+    CustomEase.create("main", "0.33, 0, 0.13, 1");
 
-  gsap.defaults({
-    ease: "main",
-    duration: 0.7
-  });
-
-  let navWrap = document.querySelector(".nav_wrap");
-  let main = document.querySelector('[data-barba="container"]');
-  let state = navWrap.getAttribute("data-nav");
-  let overlay = navWrap.querySelector(".nav_overlay");
-  let menu = navWrap.querySelector(".nav_menu");
-  let bgPanels = navWrap.querySelectorAll(".nav_menu_panel");
-  let menuToggles = document.querySelectorAll("[data-menu-toggle]");
-  let menuLinks = navWrap.querySelectorAll(".u-text-style-h2");
-  let menuIndexs = navWrap.querySelectorAll(".u-text-style-main");
-  let menuButton = document.querySelector(".menu_button_wrap");
-  let menuButtonLayout = menuButton.querySelectorAll(".menu_button_layout");
-  let menuDivider = navWrap.querySelectorAll(".nav_menu_divider");
-  let menuList = navWrap.querySelector(".nav_menu_list");
-  let navTransition = navWrap.querySelector(".nav_transition");
-
-  let tl = gsap.timeline();
-
-  const openNav = () => {
-    navWrap.setAttribute("data-nav", "open");
-    tl.clear()
-      .set(navWrap, { display: "block" })
-      .set(menu, { yPercent: 0 }, "<")
-      .set(navTransition, { autoAlpha: 0 }, "<")
-      .fromTo(menuButtonLayout, { yPercent: 0 }, { yPercent: -120, duration: 0.7, ease: "power3.out" }, "<")
-      .fromTo(overlay, { autoAlpha: 0 }, { autoAlpha: 1, duration: 1 }, "<")
-      .fromTo(bgPanels, { yPercent: -101 }, { yPercent: 0, duration: 1, ease: "power3.out" }, "<")
-      .fromTo(main, { y: 0 }, { y: "10rem", duration: 1, ease: "power3.out" }, "<")
-      .fromTo(menuList, { yPercent: 20 }, { yPercent: 0 }, "<0.4")
-      .fromTo(menuDivider, { opacity: 0, transformOrigin: "left" }, { opacity: 1, stagger: 0.01, duration: 0.7 }, "<")
-      .fromTo(menuIndexs, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.7, stagger: 0.05 }, "<")
-      .fromTo(menuLinks, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.9, stagger: 0.05 }, "<0.1");
-  };
-
-  const closeNav = () => {
-    navWrap.setAttribute("data-nav", "closed");
-    tl.clear()
-      .to(overlay, { autoAlpha: 0 })
-      .to(menu, { yPercent: -110 }, "<")
-      .to(main, { y: 0 }, "<")
-      .to(menuButtonLayout, { yPercent: 0, duration: 0.7, ease: "power3.out" }, "<")
-      .set(navWrap, { display: "none" });
-  };
-
-  const transitionNav = () => {
-    navWrap.setAttribute("data-nav", "closed");
-    tl.clear()
-      .to(overlay, { autoAlpha: 0, delay: 0.3 })
-      .to(menu, { yPercent: -110, duration: 0.9, ease: "power2.out" }, "<")
-      .to(menuButtonLayout, { yPercent: 0, duration: 0.7, ease: "power3.out" }, "<0.2")
-      .set(navWrap, { display: "none" })
-      .to(main, { y: 0 }, "<");
-  };
-
-  menuToggles.forEach((toggle) => {
-    toggle.addEventListener("click", () => {
-      state = navWrap.getAttribute("data-nav");
-      if (state === "open") {
-        closeNav();
-        lenis.start();
-      } else {
-        openNav();
-        lenis.stop();
-      }
+    gsap.defaults({
+      ease: "main",
+      duration: 0.7
     });
-  });
 
-  $("a").on("click", function (e) {
+    let navWrap = document.querySelector(".nav_wrap");
+    let main = document.querySelector('[data-barba="container"]');
+    let state = navWrap.getAttribute("data-nav");
+    let overlay = navWrap.querySelector(".nav_overlay");
+    let menu = navWrap.querySelector(".nav_menu");
+    let bgPanels = navWrap.querySelectorAll(".nav_menu_panel");
+    let menuToggles = document.querySelectorAll("[data-menu-toggle]");
+    let menuLinks = navWrap.querySelectorAll(".u-text-style-h2");
+    let menuIndexs = navWrap.querySelectorAll(".u-text-style-main");
+    let menuButton = document.querySelector(".menu_button_wrap");
+    let menuButtonLayout = menuButton.querySelectorAll(".menu_button_layout");
+    let menuDivider = navWrap.querySelectorAll(".nav_menu_divider");
+    let menuList = navWrap.querySelector(".nav_menu_list");
+    let navTransition = navWrap.querySelector(".nav_transition");
+
+    let tl = gsap.timeline();
+
+    const openNav = () => {
+      navWrap.setAttribute("data-nav", "open");
+      tl.clear()
+        .set(navWrap, { display: "block" })
+        .set(menu, { yPercent: 0 }, "<")
+        .set(navTransition, { autoAlpha: 0 }, "<")
+        .fromTo(menuButtonLayout, { yPercent: 0 }, { yPercent: -120, duration: 0.7, ease: "power3.out"}, "<")
+        .fromTo(overlay, { autoAlpha: 0 }, { autoAlpha: 1, duration: 1 }, "<")
+        .fromTo(bgPanels, { yPercent: -101 }, { yPercent: 0, duration: 1, ease:bgPanelEase  }, "<")
+        .fromTo (main, {y: 0},{y: "10rem", duration: 1, ease: bgPanelEase },"<")
+        .fromTo(menuList, { yPercent: 20 }, { yPercent: 0 }, "<0.4")
+        .fromTo(menuDivider, { opacity: 0, transformOrigin: "left" }, { opacity: 1, stagger: 0.01 , duration: 0.7 }, "<")
+        .fromTo(menuIndexs, {autoAlpha: 0 }, { autoAlpha: 1, duration: 0.7, stagger: 0.05 }, "<")
+        .fromTo(menuLinks, { autoAlpha: 0, }, { autoAlpha: 1, duration: 0.9, stagger: 0.05 }, "<0.1");
+    };
+
+    const closeNav = () => {
+      navWrap.setAttribute("data-nav", "closed");
+      tl.clear()
+        .to(overlay, { autoAlpha: 0 })
+        .to(menu, { yPercent: -110 }, "<")
+        .to(main, { y: 0 }, "<")
+        .to(menuButtonLayout, { yPercent: 0, duration: 0.7, ease: "power3.out" }, "<")
+        .set(navWrap, { display: "none" });
+    };
+
+    const transitionNav = () => {
+        navWrap.setAttribute("data-nav", "closed");
+        tl.clear()
+          .to(overlay, { autoAlpha: 0, delay: 0.3 })
+          // .to(navTransition, { autoAlpha: 1, duration: 0.5 }, "<")
+          .to(menu, { yPercent: -110, duration:0.9 , ease: "power2.out" }, "<")
+          .to(menuButtonLayout, { yPercent: 0, duration: 0.7, ease: "power3.out" }, "<0.2")
+          .set(navWrap, { display: "none" })
+          .to(main, { y: 0 }, "<");
+      };
+
+    menuToggles.forEach((toggle) => {
+      toggle.addEventListener("click", () => {
+        state = navWrap.getAttribute("data-nav");
+        if (state === "open") {
+          closeNav();
+          lenis.start();
+        } else {
+          openNav();
+          lenis.stop();
+        }
+      });
+    });
+
+    $("a").on("click", function (e) {
     const href = $(this).attr("href");
     const isSameHost = $(this).prop("hostname") === window.location.host;
     const isNotHash = href.indexOf("#") === -1;
@@ -238,8 +239,7 @@ function initMenu() {
     }
   });
 
-  // 👉 Animazione hover preview solo su dispositivi con hover attivo
-  if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
     const listItems = navWrap.querySelectorAll(".nav_menu_link");
     const imageItems = document.querySelectorAll(".nav_visual_item");
 
@@ -272,6 +272,7 @@ function initMenu() {
     }
   }
 }
+
 
 /*------- FOOTER REVEAL ------*/
 function initFooterReveal() {
