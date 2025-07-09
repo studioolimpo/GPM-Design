@@ -591,28 +591,23 @@ function addCommaBetweenTwoTags(next) {
 /*----- TRIGGER SUBMIT ----*/
 function observeFormSubmitSuccess(formSelector, callback) {
   const form = document.querySelector(formSelector);
-
   if (!form) {
-    console.warn(`❌ Nessun form trovato con selettore: ${formSelector}`);
+    console.warn(`Form not found for selector: ${formSelector}`);
     return;
   }
 
-  let alreadyTriggered = false;
-
   const observer = new MutationObserver((mutationsList) => {
-    mutationsList.forEach((mutation) => {
+    for (const mutation of mutationsList) {
       if (
         mutation.type === "attributes" &&
-        mutation.attributeName === "style"
+        mutation.attributeName === "data-wf-success" &&
+        form.getAttribute("data-wf-success") === "true"
       ) {
-        const display = window.getComputedStyle(form).display;
-
-        if (display === "none" && !alreadyTriggered) {
-          alreadyTriggered = true;
-          callback();
-        }
+        callback();
+        observer.disconnect(); // optional: disconnetti se ti basta una sola volta
+        break;
       }
-    });
+    }
   });
 
   observer.observe(form, { attributes: true });
@@ -1487,7 +1482,7 @@ barba.init({
         let next = data.next.container;
         gsap.delayedCall(0.2, initContactAnimations, [next]);
         gsap.delayedCall(0.2, () => {
-          observeFormSubmitSuccess('form[name="Email Form"]', SubmitSuccessPopup);
+          observeFormSubmitSuccess("#email-form", SubmitSuccessPopup);
         });
       }
     },
