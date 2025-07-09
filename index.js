@@ -4,6 +4,12 @@ if (typeof gsap !== "undefined" && gsap.config) {
     nullTargetWarn: false
   });
 }
+
+// ScrollTrigger.defaults({
+//   markers: true
+// });
+
+
 // Custom ease for visual reveals
 const visualRevealEase = CustomEase.create("visualReveal", "0,0,.2,1");
 const bgPanelEase = CustomEase.create("bgPanelEase", "0.86,0,0.07,1");
@@ -633,7 +639,7 @@ function initHeroProjectsAnimation() {
     yPercent: 0,
     duration: 0.7,
     ease: "power3.out",
-    delay: ranLoader ? 0.4 : 3.3,
+    delay: ranLoader ? 0.4 : 2.8,
     stagger: { amount: 0.2 },
   });
 
@@ -713,7 +719,7 @@ function initHeroSingleProjectAnimation(next) {
     yPercent: 110,
     duration: 0.9,
     ease: "power3.out",
-    delay: ranLoader ? 0.2 : 3.2,
+    delay: ranLoader ? 0.2 : 2.5,
     stagger: { amount: 0.2 },
   });
 
@@ -856,7 +862,7 @@ function initHeroProcessAnimation() {
     yPercent: 110,
     duration: 0.7,
     ease: "power3.out",
-    delay: ranLoader ? 0.4 : 3.3,
+    delay: ranLoader ? 0.4 : 2.8,
     stagger: { amount: 0.2 },
   });
 
@@ -884,7 +890,7 @@ function initHeroContactAnimation() {
     yPercent: 110,
     duration: 0.7,
     ease: "power3.out",
-    delay: ranLoader ? 0.4 : 3.3,
+    delay: ranLoader ? 0.4 : 2.9,
     stagger: { amount: 0.2 },
   });
 
@@ -1360,7 +1366,7 @@ barba.init({
         }
           cmsNest();
           runSplit(next);
-          gsap.delayedCall(0.1, initHeroProjectsAnimation, [next]);
+          gsap.delayedCall(0.3, initHeroProjectsAnimation, [next]);
           gsap.delayedCall(0.2, resetTheme, [next]);
       },
       afterEnter(data) {
@@ -1401,10 +1407,11 @@ barba.init({
 
         if (fromOutside || slugChanged) {
           // console.log("✅ Animazioni CMS HERO");
-
+          document.fonts.ready.then(() => {
           runSplit(nextContainer);
-          gsap.delayedCall(0.1, () => initHeroSingleProjectAnimation(nextContainer));
+          gsap.delayedCall(1.2, () => initHeroSingleProjectAnimation(nextContainer));
           gsap.delayedCall(0.2, () => resetTheme(nextContainer));
+          });
         }
 
         previousSlug = nextSlug;
@@ -1413,7 +1420,7 @@ barba.init({
 
       afterEnter(data) {
         const next = data.next.container;
-        gsap.delayedCall(0.1, initSingleProjectAnimations, [next]);
+        gsap.delayedCall(0.5, initSingleProjectAnimations, [next]);
       }
     },
     {
@@ -1437,9 +1444,10 @@ barba.init({
         let next = data.next.container;
         if (!ranLoader) {
           initFirstLoading();
+          runSplit(next);
         }
         runSplit(next);
-        gsap.delayedCall(0.1, initHeroProcessAnimation, [next]);
+        gsap.delayedCall(0.3, initHeroProcessAnimation, [next]);
         gsap.delayedCall(0.2, resetTheme, [next]);
       },
       afterEnter(data) {
@@ -1455,7 +1463,7 @@ barba.init({
           initFirstLoading();
         }
         runSplit(next);
-        gsap.delayedCall(0.1, initHeroContactAnimation, [next]);
+        gsap.delayedCall(0.4, initHeroContactAnimation, [next]);
         gsap.delayedCall(0.2, resetTheme, [next]);
       },
       afterEnter(data) {
