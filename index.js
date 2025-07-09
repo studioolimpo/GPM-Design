@@ -234,6 +234,7 @@ function initMenu() {
         lenis.start();
       } else {
         e.preventDefault();
+        lenis.start();
         transitionNav();
       }
     }
