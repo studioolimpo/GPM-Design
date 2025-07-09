@@ -151,7 +151,6 @@ function initMenu() {
     });
 
     let navWrap = document.querySelector(".nav_wrap");
-    let main = document.querySelector('[data-barba="container"]');
     let state = navWrap.getAttribute("data-nav");
     let overlay = navWrap.querySelector(".nav_overlay");
     let menu = navWrap.querySelector(".nav_menu");
@@ -175,8 +174,10 @@ function initMenu() {
         .set(navTransition, { autoAlpha: 0 }, "<")
         .fromTo(menuButtonLayout, { yPercent: 0 }, { yPercent: -120, duration: 0.7, ease: "power3.out"}, "<")
         .fromTo(overlay, { autoAlpha: 0 }, { autoAlpha: 1, duration: 1 }, "<")
-        .fromTo(bgPanels, { yPercent: -101 }, { yPercent: 0, duration: 1, ease:bgPanelEase  }, "<")
-        .fromTo (main, {y: 0},{y: "10rem", duration: 1, ease: bgPanelEase },"<")
+        .fromTo(bgPanels, { yPercent: -101 }, { yPercent: 0, duration: 1, ease:bgPanelEase  }, "<");
+      // Always re-select main to ensure it's fresh after Barba transitions
+      let main = document.querySelector('[data-barba="container"]');
+      tl.fromTo(main, {y: 0},{y: "10rem", duration: 1, ease: bgPanelEase },"<")
         .fromTo(menuList, { yPercent: 20 }, { yPercent: 0 }, "<0.4")
         .fromTo(menuDivider, { opacity: 0, transformOrigin: "left" }, { opacity: 1, stagger: 0.01 , duration: 0.7 }, "<")
         .fromTo(menuIndexs, {autoAlpha: 0 }, { autoAlpha: 1, duration: 0.7, stagger: 0.05 }, "<")
@@ -187,8 +188,10 @@ function initMenu() {
       navWrap.setAttribute("data-nav", "closed");
       tl.clear()
         .to(overlay, { autoAlpha: 0 })
-        .to(menu, { yPercent: -110 }, "<")
-        .to(main, { y: 0 }, "<")
+        .to(menu, { yPercent: -110 }, "<");
+      // Always re-select main to ensure it's fresh after Barba transitions
+      let main = document.querySelector('[data-barba="container"]');
+      tl.to(main, { y: 0 }, "<")
         .to(menuButtonLayout, { yPercent: 0, duration: 0.7, ease: "power3.out" }, "<")
         .set(navWrap, { display: "none" });
     };
@@ -200,8 +203,10 @@ function initMenu() {
           // .to(navTransition, { autoAlpha: 1, duration: 0.5 }, "<")
           .to(menu, { yPercent: -110, duration:0.9 , ease: "power2.out" }, "<")
           .to(menuButtonLayout, { yPercent: 0, duration: 0.7, ease: "power3.out" }, "<0.2")
-          .set(navWrap, { display: "none" })
-          .to(main, { y: 0 }, "<");
+          .set(navWrap, { display: "none" });
+        // Always re-select main to ensure it's fresh after Barba transitions
+        let main = document.querySelector('[data-barba="container"]');
+        tl.to(main, { y: 0 }, "<");
       };
 
     menuToggles.forEach((toggle) => {
@@ -897,6 +902,36 @@ function initHeroContactAnimation() {
   return tl;
 }
 
+
+/*-------------- HERO 404 -------------*/
+function initHero404Animation() {
+  const section = document.querySelector("#hero-error");  
+  if (!section) return;
+
+  // Non fare di nuovo SplitText — lo ha già fatto runSplit
+  const lines = section.querySelectorAll(".line");
+  if (!lines.length) return;
+
+
+  const tl = gsap.timeline();
+  // tl.restart(true);
+  tl.fromTo(lines, {
+    yPercent: 110,
+  }, {
+    yPercent: 0,
+    duration: 0.7,
+    ease: "power3.out",
+    delay: ranLoader ? 0.4 : 3.3,
+    stagger: { amount: 0.2 },
+  });
+
+   gsap.set(section.querySelectorAll("[data-prevent-flicker='true']"), {
+     visibility: "visible",
+   });
+  
+  return tl;
+}
+
 /*==========================================*\
   ================ PAGE SCROLL ==============
 \*==========================================*/
@@ -1284,7 +1319,7 @@ barba.init({
       const coverWrap = data.next.container.querySelector(".transition_wrap");
 
       tl.set(coverWrap, { opacity: 0 });
-      tl.to(data.current.container, { opacity: 0, y: "-20vh" });
+      tl.to(data.current.container, { opacity: 0, y: "-25vh" });
       tl.from(data.next.container, { y: "100vh" }, "<");
 
       return tl;
@@ -1419,8 +1454,8 @@ barba.init({
       },
       afterEnter(data) {
         let next = data.next.container;
-        SubmitSuccessPopup();
-        initContactAnimations(next);
+        gsap.delayedCall(0.1, SubmitSuccessPopup, [next]);
+        gsap.delayedCall(0.2, initContactAnimations, [next]);
       }
     },
     {
@@ -1430,12 +1465,13 @@ barba.init({
         if (!ranLoader) {
           initFirstLoading();
         }
-        //runSplit(next);
-        //gsap.delayedCall(0.2, resetTheme, [next]);
+        runSplit(next);
+        gsap.delayedCall(0.1, initHero404Animation, [next]);
+        gsap.delayedCall(0.2, resetTheme, [next]);
       },
       afterEnter(data) {
         let next = data.next.container;
-        init404Animations(next)
+        gsap.delayedCall(0.1, init404Animations, [next]);
       }
     }
   ]
