@@ -39,10 +39,8 @@ if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
 // 1. Inizializzazione Lenis
 function initLenis() {
   lenis = new Lenis({
-    //duration: 1.2,
-    duration: 0.8,
-    easing: t => Math.pow(t, 2.5),
-    //easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    duration: 1.2,
+    easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     smoothWheel: true,
     smoothTouch: false,
     autoResize: true,
