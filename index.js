@@ -240,38 +240,37 @@ function initMenu() {
   }
 });
 
-fixTouchActionBug();
 
-  const listItems = navWrap.querySelectorAll(".nav_menu_link");
-  const imageItems = document.querySelectorAll(".nav_visual_item");
+  // const listItems = navWrap.querySelectorAll(".nav_menu_link");
+  // const imageItems = document.querySelectorAll(".nav_visual_item");
 
-  if (listItems.length && imageItems.length) {
-    gsap.set(imageItems, { autoAlpha: 0 });
+  // if (listItems.length && imageItems.length) {
+  //   gsap.set(imageItems, { autoAlpha: 0 });
 
-    listItems.forEach((listItem, i) => {
-      listItem.addEventListener("mouseenter", () => {
-        imageItems.forEach((img, index) => {
-          gsap.killTweensOf(img);
-          gsap.to(img, {
-            autoAlpha: index === i ? 1 : 0,
-            duration: 0.5,
-            overwrite: true
-          });
-        });
-      });
+  //   listItems.forEach((listItem, i) => {
+  //     listItem.addEventListener("mouseenter", () => {
+  //       imageItems.forEach((img, index) => {
+  //         gsap.killTweensOf(img);
+  //         gsap.to(img, {
+  //           autoAlpha: index === i ? 1 : 0,
+  //           duration: 0.5,
+  //           overwrite: true
+  //         });
+  //       });
+  //     });
 
-      listItem.addEventListener("mouseleave", () => {
-        imageItems.forEach((img) => {
-          gsap.killTweensOf(img);
-          gsap.to(img, {
-            autoAlpha: 0,
-            duration: 0.3,
-            overwrite: true
-          });
-        });
-      });
-    });
-  }
+  //     listItem.addEventListener("mouseleave", () => {
+  //       imageItems.forEach((img) => {
+  //         gsap.killTweensOf(img);
+  //         gsap.to(img, {
+  //           autoAlpha: 0,
+  //           duration: 0.3,
+  //           overwrite: true
+  //         });
+  //       });
+  //     });
+  //   });
+  // }
 }
 
 /*------- FOOTER REVEAL ------*/
@@ -581,19 +580,7 @@ function addCommaBetweenTwoTags(next) {
 }
 
   
-/* TOUCH ACTION BUG */
-function fixTouchActionBug() {
-  if ("ontouchstart" in window || navigator.maxTouchPoints > 0) {
-    const links = document.querySelectorAll(".nav_menu_link, .nav_menu_item a");
 
-    links.forEach(link => {
-      link.addEventListener("touchstart", () => {
-        document.documentElement.style.touchAction = "auto"; // <html>
-        document.body.style.touchAction = "auto"; // <body>
-      }, { once: true }); // solo al primo tocco
-    });
-  }
-}
 
 
 
