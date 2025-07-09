@@ -173,12 +173,12 @@ function initMenu() {
       .set(navWrap, { display: "block" })
       .set(menu, { yPercent: 0 }, "<")
       .set(navTransition, { autoAlpha: 0 }, "<")
-      .fromTo(menuButtonLayout, { yPercent: 0 }, { yPercent: -120, duration: 0.7, ease: "power3.out"}, "<")
+      .fromTo(menuButtonLayout, { yPercent: 0 }, { yPercent: -120, duration: 0.7, ease: "power3.out" }, "<")
       .fromTo(overlay, { autoAlpha: 0 }, { autoAlpha: 1, duration: 1 }, "<")
       .fromTo(bgPanels, { yPercent: -101 }, { yPercent: 0, duration: 1, ease: bgPanelEase }, "<")
       .fromTo(main, { y: 0 }, { y: "10rem", duration: 1, ease: bgPanelEase }, "<")
       .fromTo(menuList, { yPercent: 20 }, { yPercent: 0 }, "<0.4")
-      .fromTo(menuDivider, { opacity: 0, transformOrigin: "left" }, { opacity: 1, stagger: 0.01 , duration: 0.7 }, "<")
+      .fromTo(menuDivider, { opacity: 0, transformOrigin: "left" }, { opacity: 1, stagger: 0.01, duration: 0.7 }, "<")
       .fromTo(menuIndexs, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.7, stagger: 0.05 }, "<")
       .fromTo(menuLinks, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.9, stagger: 0.05 }, "<0.1");
   };
@@ -216,37 +216,30 @@ function initMenu() {
     });
   });
 
-  // ✅ FIX: Link menu tap su mobile
-  const internalNavLinks = navWrap.querySelectorAll("a[href^='/']:not([target='_blank'])");
+  $("a").on("click", function (e) {
+  const href = $(this).attr("href");
+  const isSameHost = $(this).prop("hostname") === window.location.host;
+  const isNotHash = href.indexOf("#") === -1;
+  const isNotBlank = $(this).attr("target") !== "_blank";
+  const isNavOpen = navWrap.getAttribute("data-nav") === "open";
 
-  internalNavLinks.forEach(link => {
-    const href = link.getAttribute("href");
+  // Normalize pathname (rimuove trailing slash)
+  const currentPath = window.location.pathname.replace(/\/$/, "");
+  const targetPath = new URL(href, window.location.origin).pathname.replace(/\/$/, "");
 
-    const handleClick = (e) => {
-      const isOpen = navWrap.getAttribute("data-nav") === "open";
-      if (!isOpen) return;
+  if (isSameHost && isNotHash && isNotBlank && isNavOpen) {
+    if (currentPath === targetPath) {
+      e.preventDefault(); // ✨ BLOCCA LA TRANSIZIONE
+      closeNav();         // ✅ chiude solo il menu
+      lenis.start();      // facoltativo
+    } else {
+      e.preventDefault();
+      transitionNav();    // ✅ trigger transizione
+      // Barba gestirà il resto
+    }
+  }
+});
 
-      if (window.location.pathname === href) {
-        e.preventDefault();
-        closeNav();
-        lenis.start();
-      } else {
-        e.preventDefault();
-        transitionNav();
-        lenis.start();
-        setTimeout(() => {
-          window.location.href = href;
-        }, 600); // match tempo transizione
-      }
-    };
-
-    // Click standard
-    link.addEventListener("click", handleClick);
-    // Touchend per iOS
-    link.addEventListener("touchend", handleClick);
-  });
-
-  // 🎨 Hover immagini nel menu
   const listItems = navWrap.querySelectorAll(".nav_menu_link");
   const imageItems = document.querySelectorAll(".nav_visual_item");
 
@@ -1483,5 +1476,3 @@ barba.hooks.after((data) => {
         lenis.resize();
       }
 });
-
-
