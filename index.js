@@ -1370,48 +1370,48 @@ barba.init({
       }
     },
     {
-      namespace: 'single-project',
+  namespace: 'single-project',
 
-      leave(data) {
-        const currentSlug = document.documentElement.getAttribute('data-wf-item-slug');
-        previousSlug = currentSlug;
-        previousNamespace = 'single-project';
-        // console.log('💾 Saved slug on leave:', previousSlug);
-      },
+  leave(data) {
+    const currentSlug = document.documentElement.getAttribute('data-wf-item-slug');
+    previousSlug = currentSlug;
+    previousNamespace = 'single-project';
+  },
 
-      beforeEnter(data) {
-        const nextContainer = data.next.container;
+  beforeEnter(data) {
+    const nextContainer = data.next.container;
+    const htmlString = data.next.html;
+    const match = htmlString.match(/<html[^>]*data-wf-item-slug="([^"]+)"/);
+    const nextSlug = match ? match[1] : null;
 
-        const htmlString = data.next.html;
-        const match = htmlString.match(/<html[^>]*data-wf-item-slug="([^"]+)"/);
-        const nextSlug = match ? match[1] : null;
+    const currentNamespace = data.current?.namespace;
+    const fromOutside = currentNamespace !== 'single-project';
+    const slugChanged = nextSlug !== previousSlug;
 
-        const currentNamespace = data.current?.namespace;
-        const fromOutside = currentNamespace !== 'single-project';
-        const slugChanged = nextSlug !== previousSlug;
+    if (!ranLoader) {
+      initFirstLoading();
+      cmsNest();
+      runSplit(document);
+      gsap.delayedCall(0.1, () => initHeroSingleProjectAnimation(document));
+      gsap.delayedCall(0.2, () => resetTheme(document));
+    } else if (fromOutside || slugChanged) {
+      runSplit(nextContainer);
+      gsap.delayedCall(0.1, () => initHeroSingleProjectAnimation(nextContainer));
+      gsap.delayedCall(0.2, () => resetTheme(nextContainer));
+    } else {
+      // 🔧 Fallback: anche se il progetto è lo stesso, serve runSplit per sicurezza
+      runSplit(nextContainer);
+    }
 
-        if (!ranLoader) {
-          initFirstLoading();
-          cmsNest();
-          runSplit(nextContainer);
-        }
+    previousSlug = nextSlug;
+    previousNamespace = 'single-project';
+  },
 
-        if (fromOutside || slugChanged) {
-
-          runSplit(nextContainer);
-          gsap.delayedCall(0.1, () => initHeroSingleProjectAnimation(nextContainer));
-          gsap.delayedCall(0.2, () => resetTheme(nextContainer));
-        }
-
-        previousSlug = nextSlug;
-        previousNamespace = 'single-project';
-      },
-
-      afterEnter(data) {
-        const next = data.next.container;
-        gsap.delayedCall(0.1, initSingleProjectAnimations, [next]);
-      }
-    },
+  afterEnter(data) {
+    const next = data.next.container;
+    gsap.delayedCall(0.1, initSingleProjectAnimations, [next]);
+  }
+},
     {
       namespace: 'studio',
       beforeEnter(data) {
