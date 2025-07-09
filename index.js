@@ -240,6 +240,8 @@ function initMenu() {
   }
 });
 
+fixTouchActionBug();
+
   const listItems = navWrap.querySelectorAll(".nav_menu_link");
   const imageItems = document.querySelectorAll(".nav_visual_item");
 
@@ -579,6 +581,19 @@ function addCommaBetweenTwoTags(next) {
 }
 
   
+/* TOUCH ACTION BUG */
+function fixTouchActionBug() {
+  if ("ontouchstart" in window || navigator.maxTouchPoints > 0) {
+    const links = document.querySelectorAll(".nav_menu_link, .nav_menu_item a");
+
+    links.forEach(link => {
+      link.addEventListener("touchstart", () => {
+        document.documentElement.style.touchAction = "auto"; // <html>
+        document.body.style.touchAction = "auto"; // <body>
+      }, { once: true }); // solo al primo tocco
+    });
+  }
+}
 
 
 
