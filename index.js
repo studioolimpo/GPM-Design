@@ -463,6 +463,8 @@ function runSplit(next) {
 
       splitInstances.push(split);
     });
+
+    initLineReveal(next);
   });
 }
 
@@ -959,6 +961,7 @@ function initLineReveal(next) {
     next.querySelectorAll("[data-line-reveal='true']").forEach((text) => {
       const lines = text.querySelectorAll(".line");
       if (!lines.length) return;
+      
 
       gsap.set(text, { visibility: "visible" });
 
@@ -1176,7 +1179,6 @@ function initFirstLoading(){
 
 
 function initHomeAnimations(next) {
-  initLineReveal(next);
   initCircleAnimation(next);
   initDividerReveal(next);
   initProjectsGallerySliders(next);
@@ -1184,14 +1186,12 @@ function initHomeAnimations(next) {
 }
 
 function initProjectsAnimations(next) {
-  initLineReveal(next);
   initCircleAnimation(next);
   initDividerReveal(next);
   initImageReveal(next);
 }
 
 function initSingleProjectAnimations(next) {
-  initLineReveal(next);
   initCircleAnimation(next);
   initDividerReveal(next);
   initProjectsGallerySliders(next);
@@ -1200,7 +1200,6 @@ function initSingleProjectAnimations(next) {
 }
 
 function initStudioAnimations(next) {
-  initLineReveal(next);
   initCircleAnimation(next);
   initDividerReveal(next);
   initImageReveal(next);
@@ -1209,14 +1208,12 @@ function initStudioAnimations(next) {
 }
 
 function initProcessAnimations(next) {
-  initLineReveal(next);
   initCircleAnimation(next);
   initDividerReveal(next);
   initImageReveal(next);
 }
 
 function initContactAnimations(next) {
-  initLineReveal(next);
   initCircleAnimation(next);
   initDividerReveal(next);
   initImageReveal(next);
@@ -1224,7 +1221,6 @@ function initContactAnimations(next) {
 
 function init404Animations(next) {
   if (typeof next !== "undefined") {
-    initLineReveal(next);
     initCircleAnimation(next);
     initDividerReveal(next);
     initImageReveal(next);
@@ -1326,14 +1322,21 @@ barba.init({
       namespace: 'home',
       beforeEnter(data) {
         let next = data.next.container;
-        if (!ranLoader) {
-          initFirstLoading();
-          cmsNest();
-        }
-          runSplit(next);
-          gsap.delayedCall(0.1, initHeroHomeAnimation, [next]);
-          gsap.delayedCall(0.2, resetTheme, [next]);
-        },
+
+    if (!ranLoader) {
+      initFirstLoading();
+      cmsNest();
+
+      runSplit(document);
+      gsap.delayedCall(0.1, initHeroHomeAnimation, [document]);
+      gsap.delayedCall(0.2, resetTheme, [document]);
+    } else {
+      runSplit(next);
+      cmsNest();
+      gsap.delayedCall(0.1, initHeroHomeAnimation, [next]);
+      gsap.delayedCall(0.2, resetTheme, [next]);
+    }
+  },
 
       afterEnter(data) {
       let next = data.next.container;
@@ -1345,6 +1348,21 @@ barba.init({
 
       beforeEnter(data) {
         let next = data.next.container;
+        if (!ranLoader) {
+        initFirstLoading();
+        cmsNest();
+
+        runSplit(document);
+        gsap.delayedCall(0.1, initHeroProjectsAnimation, [document]);
+        gsap.delayedCall(0.2, resetTheme, [document]);
+        } else {
+          runSplit(next);
+          cmsNest();
+          
+          gsap.delayedCall(0.1, initHeroProjectsAnimation, [next]);
+          gsap.delayedCall(0.2, resetTheme, [next]);
+    }
+        
         if (!ranLoader) {
           initFirstLoading();
           cmsNest();
@@ -1379,17 +1397,12 @@ barba.init({
         const fromOutside = currentNamespace !== 'single-project';
         const slugChanged = nextSlug !== previousSlug;
 
-        // console.log("🔁 Previous namespace:", currentNamespace);
-        // console.log("🔁 Previous slug:", previousSlug);
-        // console.log("➡️ Next slug:", nextSlug);
-
         if (!ranLoader) {
           initFirstLoading();
           cmsNest();
         }
 
         if (fromOutside || slugChanged) {
-          // console.log("✅ Animazioni CMS HERO");
 
           runSplit(nextContainer);
           gsap.delayedCall(0.1, () => initHeroSingleProjectAnimation(nextContainer));
