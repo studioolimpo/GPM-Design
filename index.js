@@ -1179,6 +1179,7 @@ function initFirstLoading(){
 
 
 function initHomeAnimations(next) {
+  initLineReveal(next);
   initCircleAnimation(next);
   initDividerReveal(next);
   initProjectsGallerySliders(next);
@@ -1186,12 +1187,14 @@ function initHomeAnimations(next) {
 }
 
 function initProjectsAnimations(next) {
+  initLineReveal(next);
   initCircleAnimation(next);
   initDividerReveal(next);
   initImageReveal(next);
 }
 
 function initSingleProjectAnimations(next) {
+  initLineReveal(next);
   initCircleAnimation(next);
   initDividerReveal(next);
   initProjectsGallerySliders(next);
@@ -1200,6 +1203,7 @@ function initSingleProjectAnimations(next) {
 }
 
 function initStudioAnimations(next) {
+  initLineReveal(next);
   initCircleAnimation(next);
   initDividerReveal(next);
   initImageReveal(next);
@@ -1208,12 +1212,14 @@ function initStudioAnimations(next) {
 }
 
 function initProcessAnimations(next) {
+  initLineReveal(next);
   initCircleAnimation(next);
   initDividerReveal(next);
   initImageReveal(next);
 }
 
 function initContactAnimations(next) {
+  initLineReveal(next);
   initCircleAnimation(next);
   initDividerReveal(next);
   initImageReveal(next);
@@ -1221,6 +1227,7 @@ function initContactAnimations(next) {
 
 function init404Animations(next) {
   if (typeof next !== "undefined") {
+    initLineReveal(next);
     initCircleAnimation(next);
     initDividerReveal(next);
     initImageReveal(next);
@@ -1332,7 +1339,6 @@ barba.init({
       gsap.delayedCall(0.2, resetTheme, [document]);
     } else {
       runSplit(next);
-      cmsNest();
       gsap.delayedCall(0.1, initHeroHomeAnimation, [next]);
       gsap.delayedCall(0.2, resetTheme, [next]);
     }
@@ -1349,20 +1355,12 @@ barba.init({
       beforeEnter(data) {
         let next = data.next.container;
         if (!ranLoader) {
-        initFirstLoading();
-        cmsNest();
-
-        runSplit(document);
-        gsap.delayedCall(0.1, initHeroProjectsAnimation, [document]);
-        gsap.delayedCall(0.2, resetTheme, [document]);
-        } else {
-          runSplit(next);
+          initFirstLoading();
           cmsNest();
-          
+        }
+          runSplit(next);
           gsap.delayedCall(0.1, initHeroProjectsAnimation, [next]);
           gsap.delayedCall(0.2, resetTheme, [next]);
-        }
-
       },
       afterEnter(data) {
         let next = data.next.container;
@@ -1370,61 +1368,61 @@ barba.init({
       }
     },
     {
-  namespace: 'single-project',
+      namespace: 'single-project',
 
-  leave(data) {
-    const currentSlug = document.documentElement.getAttribute('data-wf-item-slug');
-    previousSlug = currentSlug;
-    previousNamespace = 'single-project';
-  },
+      leave(data) {
+        const currentSlug = document.documentElement.getAttribute('data-wf-item-slug');
+        previousSlug = currentSlug;
+        previousNamespace = 'single-project';
+        // console.log('💾 Saved slug on leave:', previousSlug);
+      },
 
-  beforeEnter(data) {
-    const nextContainer = data.next.container;
-    const htmlString = data.next.html;
-    const match = htmlString.match(/<html[^>]*data-wf-item-slug="([^"]+)"/);
-    const nextSlug = match ? match[1] : null;
+      beforeEnter(data) {
+        const nextContainer = data.next.container;
 
-    const currentNamespace = data.current?.namespace;
-    const fromOutside = currentNamespace !== 'single-project';
-    const slugChanged = nextSlug !== previousSlug;
+        const htmlString = data.next.html;
+        const match = htmlString.match(/<html[^>]*data-wf-item-slug="([^"]+)"/);
+        const nextSlug = match ? match[1] : null;
 
-    if (!ranLoader) {
-      initFirstLoading();
-      cmsNest();
-      runSplit(document);
-      gsap.delayedCall(0.1, () => initHeroSingleProjectAnimation(document));
-      gsap.delayedCall(0.2, () => resetTheme(document));
-    } else if (fromOutside || slugChanged) {
-      runSplit(nextContainer);
-      gsap.delayedCall(0.1, () => initHeroSingleProjectAnimation(nextContainer));
-      gsap.delayedCall(0.2, () => resetTheme(nextContainer));
-    } else {
-      // 🔧 Fallback: anche se il progetto è lo stesso, serve runSplit per sicurezza
-      runSplit(nextContainer);
-    }
+        const currentNamespace = data.current?.namespace;
+        const fromOutside = currentNamespace !== 'single-project';
+        const slugChanged = nextSlug !== previousSlug;
 
-    previousSlug = nextSlug;
-    previousNamespace = 'single-project';
-  },
+        // console.log("🔁 Previous namespace:", currentNamespace);
+        // console.log("🔁 Previous slug:", previousSlug);
+        // console.log("➡️ Next slug:", nextSlug);
 
-  afterEnter(data) {
-    const next = data.next.container;
-    gsap.delayedCall(0.1, initSingleProjectAnimations, [next]);
-  }
-},
+        if (!ranLoader) {
+          initFirstLoading();
+          cmsNest();
+        }
+
+        if (fromOutside || slugChanged) {
+          // console.log("✅ Animazioni CMS HERO");
+
+          runSplit(nextContainer);
+          gsap.delayedCall(0.1, () => initHeroSingleProjectAnimation(nextContainer));
+          gsap.delayedCall(0.2, () => resetTheme(nextContainer));
+        }
+
+        previousSlug = nextSlug;
+        previousNamespace = 'single-project';
+      },
+
+      afterEnter(data) {
+        const next = data.next.container;
+        gsap.delayedCall(0.1, initSingleProjectAnimations, [next]);
+      }
+    },
     {
       namespace: 'studio',
       beforeEnter(data) {
         let next = data.next.container;
         if (!ranLoader) {
           initFirstLoading();
-          runSplit(next);
-          gsap.delayedCall(0.1, initHeroStudioAnimation, [next]);
-        } else {
-          runSplit(next);
-          gsap.delayedCall(0.1, initHeroStudioAnimation, [next]);
         }
-        
+        runSplit(next);
+        gsap.delayedCall(0.1, initHeroStudioAnimation, [next]);
       },
       afterEnter(data) {
         let next = data.next.container;
@@ -1437,14 +1435,10 @@ barba.init({
         let next = data.next.container;
         if (!ranLoader) {
           initFirstLoading();
-          runSplit(next);
-
-          gsap.delayedCall(0.1, initHeroProcessAnimation, [next]);
-        } else {
-          runSplit(next);
-          gsap.delayedCall(0.1, initHeroProcessAnimation, [next]);
-          gsap.delayedCall(0.2, resetTheme, [next]);
         }
+        runSplit(next);
+        gsap.delayedCall(0.1, initHeroProcessAnimation, [next]);
+        gsap.delayedCall(0.2, resetTheme, [next]);
       },
       afterEnter(data) {
         let next = data.next.container;
@@ -1457,18 +1451,10 @@ barba.init({
         let next = data.next.container;
         if (!ranLoader) {
           initFirstLoading();
-          runSplit(next);
-
-          gsap.delayedCall(0.1, initHeroContactAnimation, [next]);
-
-        } else {
-
-          runSplit(next);
-          gsap.delayedCall(0.1, initHeroContactAnimation, [next]);
-          gsap.delayedCall(0.2, resetTheme, [next]);
-
         }
-        
+        runSplit(next);
+        gsap.delayedCall(0.1, initHeroContactAnimation, [next]);
+        gsap.delayedCall(0.2, resetTheme, [next]);
       },
       afterEnter(data) {
         let next = data.next.container;
@@ -1482,15 +1468,10 @@ barba.init({
         let next = data.next.container;
         if (!ranLoader) {
           initFirstLoading();
-          runSplit(document);
-
-          gsap.delayedCall(0.1, initHero404Animation, [next]);
-        } else {
-          runSplit(next);
-          gsap.delayedCall(0.1, initHero404Animation, [next]);
-          gsap.delayedCall(0.2, resetTheme, [next]);
         }
-        
+        runSplit(next);
+        gsap.delayedCall(0.1, initHero404Animation, [next]);
+        gsap.delayedCall(0.2, resetTheme, [next]);
       },
       afterEnter(data) {
         let next = data.next.container;
