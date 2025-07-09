@@ -586,6 +586,37 @@ function addCommaBetweenTwoTags(next) {
   });
 }
 
+
+
+/*----- TRIGGER SUBMIT ----*/
+function observeFormSubmitSuccess(formSelector, callback) {
+  const form = document.querySelector(formSelector);
+
+  if (!form) {
+    console.warn(`❌ Nessun form trovato con selettore: ${formSelector}`);
+    return;
+  }
+
+  let alreadyTriggered = false;
+
+  const observer = new MutationObserver((mutationsList) => {
+    mutationsList.forEach((mutation) => {
+      if (
+        mutation.type === "attributes" &&
+        mutation.attributeName === "style"
+      ) {
+        const display = window.getComputedStyle(form).display;
+
+        if (display === "none" && !alreadyTriggered) {
+          alreadyTriggered = true;
+          callback();
+        }
+      }
+    });
+  });
+
+  observer.observe(form, { attributes: true });
+}
   
 
 
@@ -1454,8 +1485,10 @@ barba.init({
       },
       afterEnter(data) {
         let next = data.next.container;
-        gsap.delayedCall(0.1, SubmitSuccessPopup, [next]);
         gsap.delayedCall(0.2, initContactAnimations, [next]);
+        gsap.delayedCall(0.2, () => {
+          observeFormSubmitSuccess('form[name="Email Form"]', SubmitSuccessPopup);
+        });
       }
     },
     {
