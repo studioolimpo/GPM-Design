@@ -234,8 +234,10 @@ function initMenu() {
         lenis.start();
       } else {
         e.preventDefault();
-        lenis.start();
-        transitionNav();
+        gsap.delayedCall(0.2, () => {
+          transitionNav();
+          lenis.start();
+        });
       }
     }
   });
