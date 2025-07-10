@@ -1343,12 +1343,15 @@ barba.init({
     if (!ranLoader) {
       initFirstLoading();
       cmsNest();
+      runSplit(document);
     }
-      document.fonts.ready.then(() => {
-  requestAnimationFrame(() => {
-    document.documentElement.classList.remove("no-js");
-  });
-});
+//       document.fonts.ready.then(() => {
+//   requestAnimationFrame(() => {
+//     document.documentElement.classList.remove("no-js");
+//   });
+// });
+
+      cmsNest();
       runSplit(next);
       gsap.delayedCall(0.1, initHeroHomeAnimation, [next]);
       gsap.delayedCall(0.4, resetTheme, [next]);
@@ -1357,7 +1360,7 @@ barba.init({
 
       afterEnter(data) {
       let next = data.next.container;
-      gsap.delayedCall(0.5, initHomeAnimations, [next]);
+      gsap.delayedCall(0.6, initHomeAnimations, [next]);
       }
     },
     {
@@ -1372,7 +1375,7 @@ barba.init({
         }
           cmsNest();
           runSplit(next);
-          gsap.delayedCall(0.7, initHeroProjectsAnimation, [next]);
+          gsap.delayedCall(0.6, initHeroProjectsAnimation, [next]);
           gsap.delayedCall(0.2, resetTheme, [next]);
       },
       afterEnter(data) {
