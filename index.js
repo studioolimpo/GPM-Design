@@ -1331,27 +1331,40 @@ barba.init({
 ],
   views: [
     {
-      namespace: 'home',
-      beforeEnter(data) {
-        let next = data.next.container;
+  namespace: 'home',
+  beforeEnter(data) {
+    const next = data.next.container;
 
     if (!ranLoader) {
       initFirstLoading();
       cmsNest();
-      runSplit(document);
-
     }
-      runSplit(next);
-      gsap.delayedCall(0.1, initHeroHomeAnimation, [next]);
-      gsap.delayedCall(0.2, resetTheme, [next]);
-    
+
+    // Attende font + 1 frame, poi esegue split + reveal
+    document.fonts.ready.then(() => {
+      requestAnimationFrame(() => {
+        runSplit(next);
+
+        // Ritardo minimo per sicurezza (Safari)
+        gsap.delayedCall(0.1, () => {
+          initHeroHomeAnimation(next);
+          // Rimuove visibility: hidden da elementi con data-prevent-flicker
+          gsap.set(next.querySelectorAll("[data-prevent-flicker='true']"), {
+            visibility: "visible"
+          });
+        });
+      });
+    });
+
+    // Reset theme dopo breve ritardo
+    gsap.delayedCall(0.2, resetTheme, [next]);
   },
 
-      afterEnter(data) {
-      let next = data.next.container;
-      gsap.delayedCall(0.3, initHomeAnimations, [next]);
-      }
-    },
+  afterEnter(data) {
+    const next = data.next.container;
+    gsap.delayedCall(0.3, initHomeAnimations, [next]);
+  }
+},
     {
       namespace: 'projects',
 
