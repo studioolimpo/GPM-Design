@@ -10,6 +10,8 @@ if (typeof gsap !== "undefined" && gsap.config) {
 // });
 
 
+document.documentElement.classList.add("no-js");
+
 // Custom ease for visual reveals
 const visualRevealEase = CustomEase.create("visualReveal", "0,0,.2,1");
 const bgPanelEase = CustomEase.create("bgPanelEase", "0.86,0,0.07,1");
@@ -443,7 +445,6 @@ function initLoader() {
 function runSplit(next) {
   next = next || document;
 
-  // Seleziona tutti gli elementi da splittare in linee
   const lineTargets = next.querySelectorAll("[data-split-line='true']");
 
   // Revert degli eventuali split precedenti
@@ -451,25 +452,28 @@ function runSplit(next) {
     splitInstances.forEach(split => split.revert());
   }
 
-  // Reinizializza array globale degli split
   splitInstances = [];
 
-  // Attendi che i font siano pronti per evitare problemi di misurazione
+  // Aspetta che i font siano caricati
   document.fonts.ready.then(() => {
-    lineTargets.forEach((el) => {
-      if (!el.children.length) return;
+    requestAnimationFrame(() => {
+      lineTargets.forEach((el) => {
+        if (!el.children.length) return;
 
-      const split = new SplitText(el.children, {
-        linesClass: "line",
-        type: "lines",
-        autoSplit: true,
-        mask: "lines",
-        clearProps: "all",
+        // 🔐 Rendi visibile l’elemento se era nascosto per anti-flicker
+        gsap.set(el, { visibility: "visible" });
+
+        const split = new SplitText(el.children, {
+          linesClass: "line",
+          type: "lines",
+          autoSplit: true,
+          mask: "lines",
+          clearProps: "all",
+        });
+
+        splitInstances.push(split);
       });
-
-      splitInstances.push(split);
     });
-
   });
 }
 
@@ -613,7 +617,7 @@ function initHeroHomeAnimation() {
         scale: 1,
         duration: 1.4,
         ease: "power3.out",
-        delay: ranLoader ? 0 : 2.9,
+        delay: ranLoader ? 0 : 2.5,
       }
     );
     tl.from(content, {y: "8rem", duration: 0.8,  ease: "power3.out" }, "<0.2");
@@ -963,27 +967,28 @@ function initCircleAnimation(next) {
 function initLineReveal(next) {
   next = next || document;
 
-    next.querySelectorAll("[data-line-reveal='true']").forEach((text) => {
-      const lines = text.querySelectorAll(".line");
-      if (!lines.length) return;
-      
+  next.querySelectorAll("[data-line-reveal='true']").forEach((text) => {
+    const lines = text.querySelectorAll(".line");
+    if (!lines.length) return;
 
-      gsap.set(text, { visibility: "visible" });
+    // 🔓 Sblocca sia il contenitore che le linee
+    gsap.set(text, { visibility: "visible" });
+    gsap.set(lines, { visibility: "visible" });
 
-      gsap.from(lines, {
-        yPercent: 110,
-        delay: 0.1,
-        duration: 0.7,
-        ease: "expo.out",
-        stagger: { amount: 0.3 },
-        scrollTrigger: {
-          trigger: text,
-          start: "top bottom",
-          end: "top 95%",
-          toggleActions: "none play none reset",
-        },
-      });
+    gsap.from(lines, {
+      yPercent: 110,
+      delay: 0.1,
+      duration: 0.7,
+      ease: "expo.out",
+      stagger: { amount: 0.3 },
+      scrollTrigger: {
+        trigger: text,
+        start: "top bottom",
+        end: "top 95%",
+        toggleActions: "none play none reset",
+      },
     });
+  });
 }
 
 /*-------------- DIVIDER LINE REVEAL -------------*/
@@ -1331,40 +1336,30 @@ barba.init({
 ],
   views: [
     {
-  namespace: 'home',
-  beforeEnter(data) {
-    const next = data.next.container;
+      namespace: 'home',
+      beforeEnter(data) {
+        let next = data.next.container;
 
     if (!ranLoader) {
       initFirstLoading();
       cmsNest();
     }
-
-    // Attende font + 1 frame, poi esegue split + reveal
-    document.fonts.ready.then(() => {
-      requestAnimationFrame(() => {
-        runSplit(next);
-
-        // Ritardo minimo per sicurezza (Safari)
-        gsap.delayedCall(0.1, () => {
-          initHeroHomeAnimation(next);
-          // Rimuove visibility: hidden da elementi con data-prevent-flicker
-          gsap.set(next.querySelectorAll("[data-prevent-flicker='true']"), {
-            visibility: "visible"
-          });
-        });
-      });
-    });
-
-    // Reset theme dopo breve ritardo
-    gsap.delayedCall(0.2, resetTheme, [next]);
+      document.fonts.ready.then(() => {
+  requestAnimationFrame(() => {
+    document.documentElement.classList.remove("no-js");
+  });
+});
+      runSplit(next);
+      gsap.delayedCall(0.3, initHeroHomeAnimation, [next]);
+      gsap.delayedCall(0.4, resetTheme, [next]);
+    
   },
 
-  afterEnter(data) {
-    const next = data.next.container;
-    gsap.delayedCall(0.3, initHomeAnimations, [next]);
-  }
-},
+      afterEnter(data) {
+      let next = data.next.container;
+      gsap.delayedCall(0.5, initHomeAnimations, [next]);
+      }
+    },
     {
       namespace: 'projects',
 
