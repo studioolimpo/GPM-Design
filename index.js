@@ -5,9 +5,9 @@ if (typeof gsap !== "undefined" && gsap.config) {
   });
 }
 
- ScrollTrigger.defaults({
-   markers: true
- });
+//  ScrollTrigger.defaults({
+//    markers: true
+//  });
 
 
 //document.documentElement.classList.add("no-js");
@@ -1322,7 +1322,7 @@ barba.init({
       const coverWrap = data.next.container.querySelector(".transition_wrap");
 
       tl.set(coverWrap, { opacity: 0 });
-      tl.to(data.current.container, { opacity: 0, y: "-25vh" });
+      tl.to(data.current.container, { opacity: 0, duration: 0.6, y: "-10vh" });
       tl.from(data.next.container, { y: "100vh" }, "<");
 
       return tl;
