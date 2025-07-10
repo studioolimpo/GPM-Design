@@ -5,9 +5,9 @@ if (typeof gsap !== "undefined" && gsap.config) {
   });
 }
 
-//  ScrollTrigger.defaults({
-//    markers: true
-//  });
+ ScrollTrigger.defaults({
+   markers: true
+ });
 
 
 //document.documentElement.classList.add("no-js");
@@ -1034,13 +1034,13 @@ function initImageReveal(next) {
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: wrap,
-        start: "top 90%",
+        start: "top 99%",
         toggleActions: "play none none none"
       }
     });
 
     // Se non hai gruppi, puoi usare solo l'index per lo stagger
-    const staggerDelay = index * 0.07;
+    const staggerDelay = index * 0.05;
 
     tl.to(wrap, {
       clipPath: "inset(0% 0% 0% 0%)",
