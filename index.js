@@ -5,12 +5,12 @@ if (typeof gsap !== "undefined" && gsap.config) {
   });
 }
 
-// ScrollTrigger.defaults({
-//   markers: true
-// });
+//  ScrollTrigger.defaults({
+//    markers: true
+//  });
 
 
-document.documentElement.classList.add("no-js");
+//document.documentElement.classList.add("no-js");
 
 // Custom ease for visual reveals
 const visualRevealEase = CustomEase.create("visualReveal", "0,0,.2,1");
@@ -28,7 +28,7 @@ window.history.scrollRestoration = "manual";
 
 
 let lenis
-let ranLoader = false;
+let ranLoader = sessionStorage.getItem("ranLoader") === "true";
 let lineTargets;
 let letterTargets;
 let splitInstances = [];
@@ -447,33 +447,30 @@ function runSplit(next) {
 
   const lineTargets = next.querySelectorAll("[data-split-line='true']");
 
-  // Revert degli eventuali split precedenti
+  // Revert eventuale
   if (typeof splitInstances !== "undefined" && splitInstances.length) {
     splitInstances.forEach(split => split.revert());
   }
 
   splitInstances = [];
 
-  // Aspetta che i font siano caricati
   document.fonts.ready.then(() => {
-    requestAnimationFrame(() => {
       lineTargets.forEach((el) => {
         if (!el.children.length) return;
 
-        // 🔐 Rendi visibile l’elemento se era nascosto per anti-flicker
-        // gsap.set(el, { visibility: "visible" });
-
         const split = new SplitText(el.children, {
-          linesClass: "line",
           type: "lines",
           autoSplit: true,
           mask: "lines",
+          linesClass: "line",
           clearProps: "all",
         });
 
         splitInstances.push(split);
       });
-    });
+      next.querySelectorAll("[data-line-reveal='true']").forEach((text) => {
+        gsap.set(text, { visibility: "visible" });
+      });
   });
 }
 
@@ -807,25 +804,25 @@ function initHeroStudioAnimation() {
     ease: "power3.out"
   });
 
-  tl.to(dividers, {
-    scaleX: 1,
-    duration: 0.7,
-    stagger: 0.05,
-    ease: dividerEase,
-  }, "<0.1");
-
   tl.to(wrap, {
     clipPath: "inset(0% 0% 0% 0%)",
     webkitClipPath: "inset(0% 0% 0% 0%)",
     ease: visualRevealEase,
-    duration: 0.7,
+    duration: 0.6,
   }, "<0.2");
 
   tl.to(image, {
     opacity: 1,
     yPercent: 0,
-    duration: 0.6,
+    duration: 0.5,
     ease: visualRevealEase,
+  }, "<0.1");
+
+  tl.to(dividers, {
+    scaleX: 1,
+    duration: 0.9,
+    stagger: 0.06,
+    ease: dividerEase,
   }, "<0.2");
 
   if (visualbg) {
@@ -840,7 +837,7 @@ function initHeroStudioAnimation() {
     yPercent: 110,
     duration: 0.7,
     ease: "power3.out",
-    stagger: { amount: 0.2 },
+    stagger: { amount: 0.3 },
   }, "<0.1");
 
   return tl;
@@ -967,13 +964,11 @@ function initCircleAnimation(next) {
 function initLineReveal(next) {
   next = next || document;
 
+
+
   next.querySelectorAll("[data-line-reveal='true']").forEach((text) => {
     const lines = text.querySelectorAll(".line");
     if (!lines.length) return;
-
-    // 🔓 Sblocca sia il contenitore che le linee
-    // gsap.set(text, { visibility: "visible" });
-    // gsap.set(lines, { visibility: "visible" });
 
     gsap.from(lines, {
       yPercent: 110,
@@ -1336,131 +1331,179 @@ barba.init({
 ],
   views: [
     {
-      namespace: 'home',
-      beforeEnter(data) {
-        let next = data.next.container;
+  namespace: 'home',
+  beforeEnter(data) {
+    const next = data.next.container;
 
     if (!ranLoader) {
-      initFirstLoading();
-      cmsNest();
-      runSplit(document);
-    }
-//       document.fonts.ready.then(() => {
-//   requestAnimationFrame(() => {
-//     document.documentElement.classList.remove("no-js");
-//   });
-// });
-
-      cmsNest();
+      initFirstLoading();         
+      cmsNest();                  
       runSplit(next);
       gsap.delayedCall(0.1, initHeroHomeAnimation, [next]);
       gsap.delayedCall(0.4, resetTheme, [next]);
-    
+      document.fonts.ready.then(() => {
+        gsap.delayedCall(0.3, initHomeAnimations, [next]);
+      });
+    } else {
+      cmsNest();                    // sempre utile
+      runSplit(next);              // split solo sul nuovo container
+      gsap.delayedCall(0.1, initHeroHomeAnimation, [next]);
+      gsap.delayedCall(0.4, resetTheme, [next]);
+    }
   },
 
-      afterEnter(data) {
-      let next = data.next.container;
+  afterEnter(data) {
+    const next = data.next.container;
+
+    // Esegui solo se non è primo caricamento
+    if (ranLoader) {
       gsap.delayedCall(0.6, initHomeAnimations, [next]);
-      }
-    },
+    }
+  }
+},
     {
-      namespace: 'projects',
+  namespace: 'projects',
 
-      beforeEnter(data) {
-        let next = data.next.container;
-        if (!ranLoader) {
-          initFirstLoading();
-          cmsNest();
-          runSplit(document);
-        }
-          cmsNest();
-          runSplit(next);
-          gsap.delayedCall(0.6, initHeroProjectsAnimation, [next]);
-          gsap.delayedCall(0.2, resetTheme, [next]);
-      },
-      afterEnter(data) {
-        let next = data.next.container;
-        gsap.delayedCall(0.3, initProjectsAnimations, [next]);
-      }
-    },
+  beforeEnter(data) {
+    const next = data.next.container;
+
+    if (!ranLoader) {
+      initFirstLoading();               
+      cmsNest();                    
+      runSplit(document);            
+      gsap.delayedCall(0.2, resetTheme, [next]);
+      gsap.delayedCall(0.6, initHeroProjectsAnimation, [next]);
+      gsap.delayedCall(3.3, initProjectsAnimations, [next]);
+    } else {
+      cmsNest();
+      runSplit(next);                
+      gsap.delayedCall(0.2, resetTheme, [next]);
+      gsap.delayedCall(0.5, initHeroProjectsAnimation, [next]);
+    }
+  },
+
+  afterEnter(data) {
+    const next = data.next.container;
+
+    if (ranLoader) {
+      gsap.delayedCall(0.1, initProjectsAnimations, [next]);
+    }
+  }
+},
     {
-      namespace: 'single-project',
+  namespace: 'single-project',
 
-      leave(data) {
-        const currentSlug = document.documentElement.getAttribute('data-wf-item-slug');
-        previousSlug = currentSlug;
-        previousNamespace = 'single-project';
-        // console.log('💾 Saved slug on leave:', previousSlug);
-      },
+  leave(data) {
+    const currentSlug = document.documentElement.getAttribute('data-wf-item-slug');
+    previousSlug = currentSlug;
+    previousNamespace = 'single-project';
+  },
 
-      beforeEnter(data) {
-        const nextContainer = data.next.container;
+  beforeEnter(data) {
+    const nextContainer = data.next.container;
 
-        const htmlString = data.next.html;
-        const match = htmlString.match(/<html[^>]*data-wf-item-slug="([^"]+)"/);
-        const nextSlug = match ? match[1] : null;
+    const htmlString = data.next.html;
+    const match = htmlString.match(/<html[^>]*data-wf-item-slug="([^"]+)"/);
+    const nextSlug = match ? match[1] : null;
 
-        const currentNamespace = data.current?.namespace;
-        const fromOutside = currentNamespace !== 'single-project';
-        const slugChanged = nextSlug !== previousSlug;
+    const currentNamespace = data.current?.namespace;
+    const fromOutside = currentNamespace !== 'single-project';
+    const slugChanged = nextSlug !== previousSlug;
 
-        if (!ranLoader) {
-          initFirstLoading();
-          cmsNest();
-          runSplit(document);
-          gsap.delayedCall(0.7, () => initHeroSingleProjectAnimation(document));
-          gsap.delayedCall(0.2, () => resetTheme(nextContainer));
-        }
 
-        if (fromOutside || slugChanged) {
-          runSplit(nextContainer);
-          gsap.delayedCall(0.6, () => initHeroSingleProjectAnimation(nextContainer));
-          gsap.delayedCall(0.2, () => resetTheme(nextContainer));
-          
-        }
+    // Imposta visibility: hidden solo su questi elementi
+    
 
-        previousSlug = nextSlug;
-        previousNamespace = 'single-project';
-      },
+    // Primo caricamento
+    if (!ranLoader) {
+      // gsap.set(texts, { visibility: "hidden" });
+      initFirstLoading();
+      cmsNest();
+      runSplit(document);
+      gsap.delayedCall(0.7, () => initHeroSingleProjectAnimation(document));
+      gsap.delayedCall(0.2, () => resetTheme(nextContainer));
+      gsap.delayedCall(2, initSingleProjectAnimations, [nextContainer]);
+      
+    }
 
-      afterEnter(data) {
-        const next = data.next.container;
-        gsap.delayedCall(1, initSingleProjectAnimations, [next]);
+    // Navigazione tra progetti diversi o arrivo da un'altra pagina
+    if (ranLoader && (fromOutside || slugChanged)) {
+      runSplit(nextContainer);
+      gsap.delayedCall(0.7, () => initHeroSingleProjectAnimation(nextContainer));
+      gsap.delayedCall(0.2, () => resetTheme(nextContainer));
+    }
+
+    previousSlug = nextSlug;
+    previousNamespace = 'single-project';
+  },
+
+  afterEnter(data) {
+    const next = data.next.container;
+
+    if (!ranLoader || previousNamespace !== 'single-project') {
+      // Esegui sempre se arrivi da fuori
+      gsap.delayedCall(0.5, initSingleProjectAnimations, [next]);
+    } else {
+      // Evita animazione ridondante se lo slug è lo stesso
+      const currentSlug = document.documentElement.getAttribute('data-wf-item-slug');
+      if (currentSlug !== previousSlug) {
+        gsap.delayedCall(0.1, initSingleProjectAnimations, [next]);
       }
-    },
+    }
+  }
+},
+   {
+  namespace: 'studio',
+
+  beforeEnter(data) {
+    const next = data.next.container;
+
+    if (!ranLoader) {
+      initFirstLoading(); 
+      runSplit(document);    
+      gsap.delayedCall(0.2, initHeroStudioAnimation, [next]);
+      gsap.delayedCall(0.6, initStudioAnimations, [next]);
+    } else {
+      runSplit(next);          
+      gsap.delayedCall(0.3, initHeroStudioAnimation, [next]);
+    }
+  },
+
+  afterEnter(data) {
+    const next = data.next.container;
+
+    if (ranLoader) {
+      gsap.delayedCall(0.6, initStudioAnimations, [next]);
+    }
+  }
+},
     {
-      namespace: 'studio',
-      beforeEnter(data) {
-        let next = data.next.container;
-        if (!ranLoader) {
-          initFirstLoading();
-          runSplit(document);
-        }
-        runSplit(next);
-        gsap.delayedCall(0.3, initHeroStudioAnimation, [next]);
-      },
-      afterEnter(data) {
-        let next = data.next.container;
-        gsap.delayedCall(0.2, initStudioAnimations, [next]);
-      }
-    },
-    {
-      namespace: 'process',
-      beforeEnter(data) {
-        let next = data.next.container;
-        if (!ranLoader) {
-          initFirstLoading();
-          runSplit(document);
-        }
-        runSplit(next);
-        gsap.delayedCall(0.3, initHeroProcessAnimation, [next]);
-        gsap.delayedCall(0.2, resetTheme, [next]);
-      },
-      afterEnter(data) {
-        let next = data.next.container;
-        gsap.delayedCall(0.3, initProcessAnimations, [next]);
-      }
-    },
+  namespace: 'process',
+
+  beforeEnter(data) {
+    const next = data.next.container;
+
+    if (!ranLoader) {
+      initFirstLoading();
+      runSplit(document);
+      gsap.delayedCall(0.5, initHeroProcessAnimation, [next]);
+      gsap.delayedCall(0.6, initProcessAnimations, [next]);
+    } else {
+      runSplit(next);
+      gsap.delayedCall(0.3, initHeroProcessAnimation, [next]);
+    }
+
+    gsap.delayedCall(0.2, resetTheme, [next]);
+  },
+
+  afterEnter(data) {
+    const next = data.next.container;
+
+    if (ranLoader) {
+      gsap.delayedCall(0.2, initProcessAnimations, [next]);
+    }
+  }
+},
     {
       namespace: 'contact',
       beforeEnter(data) {
@@ -1475,8 +1518,8 @@ barba.init({
       },
       afterEnter(data) {
         let next = data.next.container;
-        gsap.delayedCall(0.1, SubmitSuccessPopup, [next]);
         gsap.delayedCall(0.2, initContactAnimations, [next]);
+        gsap.delayedCall(0.3, SubmitSuccessPopup, [next]);
       }
     },
     {
