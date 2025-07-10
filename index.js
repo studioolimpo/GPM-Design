@@ -1561,6 +1561,7 @@ barba.hooks.enter((data) => {
 
 barba.hooks.afterEnter(() => {
   Signature();
+  initDynamicCurrentYear();
 });
 
 // Hook: reset finale dopo transizione
