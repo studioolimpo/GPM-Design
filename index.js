@@ -461,7 +461,7 @@ function runSplit(next) {
         if (!el.children.length) return;
 
         // 🔐 Rendi visibile l’elemento se era nascosto per anti-flicker
-        gsap.set(el, { visibility: "visible" });
+        // gsap.set(el, { visibility: "visible" });
 
         const split = new SplitText(el.children, {
           linesClass: "line",
@@ -617,7 +617,7 @@ function initHeroHomeAnimation() {
         scale: 1,
         duration: 1.4,
         ease: "power3.out",
-        delay: ranLoader ? 0 : 2.5,
+        delay: ranLoader ? 0 : 2.8,
       }
     );
     tl.from(content, {y: "8rem", duration: 0.8,  ease: "power3.out" }, "<0.2");
@@ -972,8 +972,8 @@ function initLineReveal(next) {
     if (!lines.length) return;
 
     // 🔓 Sblocca sia il contenitore che le linee
-    gsap.set(text, { visibility: "visible" });
-    gsap.set(lines, { visibility: "visible" });
+    // gsap.set(text, { visibility: "visible" });
+    // gsap.set(lines, { visibility: "visible" });
 
     gsap.from(lines, {
       yPercent: 110,
@@ -1310,7 +1310,7 @@ barba.init({
     sync: true,
     leave(data) {
       const tl = gsap.timeline({
-        defaults: { duration: 1.1, ease: "power2.out" },
+        defaults: { duration: 0.9, ease: "power2.out" },
       });
 
       const coverWrap = data.current.container.querySelector(".transition_wrap");
@@ -1321,7 +1321,7 @@ barba.init({
     },
     enter(data) {
       const tl = gsap.timeline({
-        defaults: { duration: 1, ease: "power2.out" },
+        defaults: { duration: 0.9, ease: "power2.out" },
       });
 
       const coverWrap = data.next.container.querySelector(".transition_wrap");
@@ -1350,7 +1350,7 @@ barba.init({
   });
 });
       runSplit(next);
-      gsap.delayedCall(0.3, initHeroHomeAnimation, [next]);
+      gsap.delayedCall(0.1, initHeroHomeAnimation, [next]);
       gsap.delayedCall(0.4, resetTheme, [next]);
     
   },
@@ -1372,7 +1372,7 @@ barba.init({
         }
           cmsNest();
           runSplit(next);
-          gsap.delayedCall(0.4, initHeroProjectsAnimation, [next]);
+          gsap.delayedCall(0.7, initHeroProjectsAnimation, [next]);
           gsap.delayedCall(0.2, resetTheme, [next]);
       },
       afterEnter(data) {
