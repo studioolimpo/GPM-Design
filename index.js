@@ -1434,8 +1434,9 @@ barba.init({
         let next = data.next.container;
         if (!ranLoader) {
           initFirstLoading();
+          runSplit(document);
         }
-        runSplit(document);
+        runSplit(next);
         gsap.delayedCall(0.3, initHeroStudioAnimation, [next]);
       },
       afterEnter(data) {
@@ -1466,6 +1467,7 @@ barba.init({
         let next = data.next.container;
         if (!ranLoader) {
           initFirstLoading();
+          runSplit(document);
         }
         runSplit(next);
         gsap.delayedCall(0.4, initHeroContactAnimation, [next]);
@@ -1483,6 +1485,7 @@ barba.init({
         let next = data.next.container;
         if (!ranLoader) {
           initFirstLoading();
+           runSplit(document);
         }
         runSplit(next);
         gsap.delayedCall(0.1, initHero404Animation, [next]);
