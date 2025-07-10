@@ -1310,7 +1310,7 @@ barba.init({
     sync: true,
     leave(data) {
       const tl = gsap.timeline({
-        defaults: { duration: 1, ease: "power2.out" },
+        defaults: { duration: 1.1, ease: "power2.out" },
       });
 
       const coverWrap = data.current.container.querySelector(".transition_wrap");
@@ -1321,7 +1321,7 @@ barba.init({
     },
     enter(data) {
       const tl = gsap.timeline({
-        defaults: { duration: 0.9, ease: "power3.out" },
+        defaults: { duration: 1, ease: "power2.out" },
       });
 
       const coverWrap = data.next.container.querySelector(".transition_wrap");
