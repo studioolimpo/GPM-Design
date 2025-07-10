@@ -643,7 +643,7 @@ function initHeroProjectsAnimation() {
     yPercent: 0,
     duration: 0.7,
     ease: "power3.out",
-    delay: ranLoader ? 0.1 : 2.8,
+    delay: ranLoader ? 0 : 2.6,
     stagger: { amount: 0.2 },
   });
 
@@ -803,7 +803,7 @@ function initHeroStudioAnimation() {
   tl.from(layout, {
     y: "10rem",
     duration: 0.5,
-    delay: ranLoader ? 0 : 3.0,
+    delay: ranLoader ? 0 : 2.8,
     ease: "power3.out"
   });
 
@@ -1372,7 +1372,7 @@ barba.init({
         }
           cmsNest();
           runSplit(next);
-          gsap.delayedCall(0.3, initHeroProjectsAnimation, [next]);
+          gsap.delayedCall(0.4, initHeroProjectsAnimation, [next]);
           gsap.delayedCall(0.2, resetTheme, [next]);
       },
       afterEnter(data) {
@@ -1433,7 +1433,7 @@ barba.init({
           initFirstLoading();
         }
         runSplit(document);
-        gsap.delayedCall(0.2, initHeroStudioAnimation, [next]);
+        gsap.delayedCall(0.3, initHeroStudioAnimation, [next]);
       },
       afterEnter(data) {
         let next = data.next.container;
