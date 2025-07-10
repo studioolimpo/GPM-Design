@@ -1067,6 +1067,35 @@ function initImageReveal(next) {
   });
 }
 
+
+/*------- FADE IN -------*/
+function fadeInOnScroll(next) {
+  next = next || document;
+  const elements = next.querySelectorAll('[data-fade-in="true"]');
+
+  elements.forEach(el => {
+    gsap.fromTo(el,
+      {
+        autoAlpha: 0,
+        y: "4rem"
+      },
+      {
+        autoAlpha: 1,
+        y: 0,
+        duration: 1.5,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: el,
+          start: "top 85%", // quando l’elemento entra nella viewport
+          toggleActions: "play none none none", // nessun reverse
+          once: true // l’animazione avviene una sola volta
+        }
+      }
+    );
+  });
+}
+
+
 /*-------------- ANIMATE THEME SCROLL -------------*/
 function initThemeScroll(next) {
   next = next || document;
@@ -1185,6 +1214,7 @@ function initFirstLoading(){
 
 function initHomeAnimations(next) {
   initLineReveal(next);
+  fadeInOnScroll(next);
   //initCircleAnimation(next);
   initDividerReveal(next);
   initProjectsGallerySliders(next);
@@ -1200,6 +1230,7 @@ function initProjectsAnimations(next) {
 
 function initSingleProjectAnimations(next) {
   initLineReveal(next);
+  fadeInOnScroll(next);
   //initCircleAnimation(next);
   initDividerReveal(next);
   initProjectsGallerySliders(next);
@@ -1209,6 +1240,7 @@ function initSingleProjectAnimations(next) {
 
 function initStudioAnimations(next) {
   initLineReveal(next);
+  fadeInOnScroll(next);
   //initCircleAnimation(next);
   initDividerReveal(next);
   initImageReveal(next);
@@ -1218,6 +1250,7 @@ function initStudioAnimations(next) {
 
 function initProcessAnimations(next) {
   initLineReveal(next);
+  fadeInOnScroll(next);
   //initCircleAnimation(next);
   initDividerReveal(next);
   initImageReveal(next);
@@ -1225,6 +1258,7 @@ function initProcessAnimations(next) {
 
 function initContactAnimations(next) {
   initLineReveal(next);
+  fadeInOnScroll(next);
   //initCircleAnimation(next);
   initDividerReveal(next);
   initImageReveal(next);
@@ -1233,6 +1267,7 @@ function initContactAnimations(next) {
 function init404Animations(next) {
   if (typeof next !== "undefined") {
     initLineReveal(next);
+    fadeInOnScroll(next);
     //initCircleAnimation(next);
     initDividerReveal(next);
     initImageReveal(next);
