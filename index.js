@@ -1185,7 +1185,7 @@ function initFirstLoading(){
 
 function initHomeAnimations(next) {
   initLineReveal(next);
-  initCircleAnimation(next);
+  //initCircleAnimation(next);
   initDividerReveal(next);
   initProjectsGallerySliders(next);
   initImageReveal(next);
@@ -1193,14 +1193,14 @@ function initHomeAnimations(next) {
 
 function initProjectsAnimations(next) {
   initLineReveal(next);
-  initCircleAnimation(next);
+  //initCircleAnimation(next);
   initDividerReveal(next);
   initImageReveal(next);
 }
 
 function initSingleProjectAnimations(next) {
   initLineReveal(next);
-  initCircleAnimation(next);
+  //initCircleAnimation(next);
   initDividerReveal(next);
   initProjectsGallerySliders(next);
   initImageReveal(next);
@@ -1209,7 +1209,7 @@ function initSingleProjectAnimations(next) {
 
 function initStudioAnimations(next) {
   initLineReveal(next);
-  initCircleAnimation(next);
+  //initCircleAnimation(next);
   initDividerReveal(next);
   initImageReveal(next);
   initThemeScroll(next);
@@ -1218,14 +1218,14 @@ function initStudioAnimations(next) {
 
 function initProcessAnimations(next) {
   initLineReveal(next);
-  initCircleAnimation(next);
+  //initCircleAnimation(next);
   initDividerReveal(next);
   initImageReveal(next);
 }
 
 function initContactAnimations(next) {
   initLineReveal(next);
-  initCircleAnimation(next);
+  //initCircleAnimation(next);
   initDividerReveal(next);
   initImageReveal(next);
 }
@@ -1233,7 +1233,7 @@ function initContactAnimations(next) {
 function init404Animations(next) {
   if (typeof next !== "undefined") {
     initLineReveal(next);
-    initCircleAnimation(next);
+    //initCircleAnimation(next);
     initDividerReveal(next);
     initImageReveal(next);
   }
