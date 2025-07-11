@@ -1082,17 +1082,19 @@ function fadeInOnScroll(next) {
       {
         autoAlpha: 1,
         y: 0,
-        duration: 1.6,
+        duration: 1.5,
         ease: "power3.out",
         scrollTrigger: {
           trigger: el,
-          start: "top 75%", 
+          start: "top 90%",
           toggleActions: "play none none none",
           once: true
         }
       }
     );
   });
+
+  ScrollTrigger.refresh();
 }
 
 
@@ -1250,10 +1252,19 @@ function initStudioAnimations(next) {
 
 function initProcessAnimations(next) {
   initLineReveal(next);
-  fadeInOnScroll(next);
+    if (!ranLoader) {
+    gsap.delayedCall(3.2, fadeInOnScroll, [next]);
+  } else {
+    fadeInOnScroll(next);
+  }
   //initCircleAnimation(next);
   initDividerReveal(next);
-  initImageReveal(next);
+  
+    if (!ranLoader) {
+    gsap.delayedCall(3.3, initImageReveal, [next]);
+  } else {
+    initImageReveal(next);
+  }
 }
 
 function initContactAnimations(next) {
