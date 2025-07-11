@@ -1077,18 +1077,18 @@ function fadeInOnScroll(next) {
     gsap.fromTo(el,
       {
         autoAlpha: 0,
-        y: "4rem"
+        y: "3.5rem"
       },
       {
         autoAlpha: 1,
         y: 0,
-        duration: 1.5,
+        duration: 1.6,
         ease: "power3.out",
         scrollTrigger: {
           trigger: el,
-          start: "top 85%", // quando l’elemento entra nella viewport
-          toggleActions: "play none none none", // nessun reverse
-          once: true // l’animazione avviene una sola volta
+          start: "top 75%", 
+          toggleActions: "play none none none",
+          once: true
         }
       }
     );
