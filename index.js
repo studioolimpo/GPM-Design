@@ -199,7 +199,7 @@ function initMenu() {
         .to(menu, { yPercent: -110 }, "<");
       // Always re-select main to ensure it's fresh after Barba transitions
       let main = document.querySelector('[data-barba="container"]');
-      tl.to(main, { y: 0 }, "-=0.1")
+      tl.to(main, { y: 0, duration: 0.6 }, "<")
         .to(menuButtonLayout, { yPercent: 0, duration: 0.7, ease: "power3.out" }, "<")
         .set(navWrap, { display: "none" });
     };
@@ -214,7 +214,7 @@ function initMenu() {
           .set(navWrap, { display: "none" });
         // Always re-select main to ensure it's fresh after Barba transitions
         let main = document.querySelector('[data-barba="container"]');
-        tl.to(main, { y: 0 }, "<");
+        tl.to(main, { y: 0, duration: 0.6 }, "<");
       };
 
     menuToggles.forEach((toggle) => {
@@ -570,26 +570,29 @@ function Signature() {
       console.log("%cCredits: Studio Olimpo – https://www.studioolimpo.it", "background: #F8F6F1; color: #000; font-size: 12px; padding:10px 14px;");
     }
   }
+  
+function addCommaBetweenTwoTags(context = document) {
+  // Aggiungi tutte le classi wrapper rilevanti
+  const wraps = context.querySelectorAll(
+    ".hero_project_tag_wrapper, .projects_group, .slider_tag_wrapper" // ← aggiungi qui il wrapper usato nello slider
+  );
 
-/*------- ADD COMMA TO TAG ------*/
+  console.log(`🔍 Trovati ${wraps.length} gruppi totali`);
 
-function addCommaBetweenTwoTags(next) {
-  next = next || document;
+  wraps.forEach(wrap => {
+    const tagTexts = wrap.querySelectorAll(".hero_project_tag_text");
 
-  next.querySelectorAll(".hero_project_tag_list").forEach(tagList => {
-    // Rimuove eventuali virgole precedenti
-    tagList.querySelectorAll(".injected-comma").forEach(el => el.remove());
+    if (tagTexts.length === 2) {
+      const first = tagTexts[0];
 
-    const firstTag = tagList.querySelector(".hero_project_tag_text");
-    if (firstTag) {
-      const commaSpan = document.createElement("span");
-      commaSpan.classList.add("injected-comma");
-      commaSpan.textContent = ", ";
-      firstTag.appendChild(commaSpan);
+      if (!first.dataset.commaAdded) {
+        first.textContent = first.textContent.trim() + ", ";
+        first.dataset.commaAdded = "true";
+        console.log(`✅ Virgola aggiunta a "${first.textContent}"`);
+      }
     }
   });
 }
-  
 
 
 
@@ -1158,34 +1161,81 @@ function resetTheme(next) {
 }
 
 /*-------------- PARALLAX ELEMENT -------------*/
-function initParallaxElements(next) {
-  // Attivo solo su desktop (larghezza maggiore di 1024px)
-  if (window.innerWidth <= 1024) return;
 
+function initGlobalParallax(next) {
   next = next || document;
 
-  next.querySelectorAll("[data-parallax]").forEach(el => {
-    if (el.dataset.parallaxInitialized) return;
-    el.dataset.parallaxInitialized = "true";
+  const mm = gsap.matchMedia()
 
-    const speed = parseFloat(el.dataset.parallax);
-    if (isNaN(speed)) return;
+  mm.add(
+    {
+      isMobile: "(max-width:479px)",
+      isMobileLandscape: "(max-width:767px)",
+      isTablet: "(max-width:991px)",
+      isDesktop: "(min-width:992px)"
+    },
+    (context) => {
+      const { isMobile, isMobileLandscape, isTablet } = context.conditions
 
-    gsap.fromTo(
-      el,
-      { y: 0 },
-      {
-        y: () => window.innerHeight * speed * -1,
-        ease: "none",
-        scrollTrigger: {
-          trigger: el,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: true
-        }
-      }
-    );
-  });
+      const ctx = gsap.context(() => {
+        next.querySelectorAll('[data-parallax="trigger"]').forEach((trigger) => {
+            // Check if this trigger has to be disabled on smaller breakpoints
+            const disable = trigger.getAttribute("data-parallax-disable")
+            if (
+              (disable === "mobile" && isMobile) ||
+              (disable === "mobileLandscape" && isMobileLandscape) ||
+              (disable === "tablet" && isTablet)
+            ) {
+              return
+            }
+            
+            // Optional: you can target an element inside a trigger if necessary 
+            const target = trigger.querySelector('[data-parallax="target"]') || trigger
+
+            // Get the direction value to decide between xPercent or yPercent tween
+            const direction = trigger.getAttribute("data-parallax-direction") || "vertical"
+            const prop = direction === "horizontal" ? "xPercent" : "yPercent"
+            
+            // Get the scrub value, our default is 'true' because that feels nice with Lenis
+            const scrubAttr = trigger.getAttribute("data-parallax-scrub")
+            const scrub = scrubAttr ? parseFloat(scrubAttr) : true
+            
+            // Get the start position in % 
+            const startAttr = trigger.getAttribute("data-parallax-start")
+            const startVal = startAttr !== null ? parseFloat(startAttr) : 20
+            
+            // Get the end position in %
+            const endAttr = trigger.getAttribute("data-parallax-end")
+            const endVal = endAttr !== null ? parseFloat(endAttr) : -20
+            
+            // Get the start value of the ScrollTrigger
+            const scrollStartRaw = trigger.getAttribute("data-parallax-scroll-start") || "top bottom"
+            const scrollStart = `clamp(${scrollStartRaw})`
+            
+           // Get the end value of the ScrollTrigger  
+            const scrollEndRaw = trigger.getAttribute("data-parallax-scroll-end") || "bottom top"
+            const scrollEnd = `clamp(${scrollEndRaw})`
+
+            gsap.fromTo(
+              target,
+              { [prop]: startVal },
+              {
+                [prop]: endVal,
+                ease: "none",
+                scrollTrigger: {
+                  trigger,
+                  start: scrollStart,
+                  end: scrollEnd,
+                  scrub,
+                },
+              }
+            )
+          })
+      })
+
+      return () => ctx.revert()
+    }
+  )
 }
 
   function initProjectImageHoverEffect() {
@@ -1199,7 +1249,7 @@ function initParallaxElements(next) {
       $item.on('mouseenter', function () {
         gsap.to($img, {
           scale: 1.035,
-          duration: 0.,
+          duration: 0.5,
           ease: 'power2.out',
           overwrite: 'auto',
           transformOrigin: 'center center'
@@ -1257,8 +1307,7 @@ function initSingleProjectAnimations(next) {
   //initCircleAnimation(next);
   initDividerReveal(next);
   initProjectsGallerySliders(next);
-  initImageReveal(next);
-  
+  initImageReveal(next);  
 }
 
 function initStudioAnimations(next) {
@@ -1268,8 +1317,7 @@ function initStudioAnimations(next) {
   initDividerReveal(next);
   initImageReveal(next);
   initThemeScroll(next);
-  initParallaxElements(next);
-}
+  initGlobalParallax(next)}
 
 function initProcessAnimations(next) {
   initLineReveal(next);
@@ -1406,6 +1454,7 @@ barba.init({
       initFirstLoading();         
       cmsNest();                  
       runSplit(next);
+      addCommaBetweenTwoTags();
       gsap.delayedCall(0.1, initHeroHomeAnimation, [next]);
       gsap.delayedCall(0.4, resetTheme, [next]);
       document.fonts.ready.then(() => {
@@ -1424,7 +1473,7 @@ barba.init({
 
     // Esegui solo se non è primo caricamento
     if (ranLoader) {
-      gsap.delayedCall(0.6, initHomeAnimations, [next]);
+      gsap.delayedCall(0.4, initHomeAnimations, [next]);
     }
   }
 },
@@ -1437,7 +1486,8 @@ barba.init({
     if (!ranLoader) {
       initFirstLoading();               
       cmsNest();                    
-      runSplit(document);            
+      runSplit(document); 
+      addCommaBetweenTwoTags();           
       gsap.delayedCall(0.2, resetTheme, [next]);
       gsap.delayedCall(0.6, initHeroProjectsAnimation, [next]);
       gsap.delayedCall(3.3, initProjectsAnimations, [next]);
@@ -1487,15 +1537,17 @@ barba.init({
       initFirstLoading();
       cmsNest();
       runSplit(document);
+      addCommaBetweenTwoTags();
       gsap.delayedCall(0.7, () => initHeroSingleProjectAnimation(document));
       gsap.delayedCall(0.2, () => resetTheme(nextContainer));
-      gsap.delayedCall(2, initSingleProjectAnimations, [nextContainer]);
+      gsap.delayedCall(3, initSingleProjectAnimations, [nextContainer]);
       
     }
 
     // Navigazione tra progetti diversi o arrivo da un'altra pagina
     if (ranLoader && (fromOutside || slugChanged)) {
       runSplit(nextContainer);
+      addCommaBetweenTwoTags();
       gsap.delayedCall(0.7, () => initHeroSingleProjectAnimation(nextContainer));
       gsap.delayedCall(0.2, () => resetTheme(nextContainer));
     }
@@ -1509,7 +1561,7 @@ barba.init({
 
     if (!ranLoader || previousNamespace !== 'single-project') {
       // Esegui sempre se arrivi da fuori
-      gsap.delayedCall(0.5, initSingleProjectAnimations, [next]);
+      gsap.delayedCall(0.1, initSingleProjectAnimations, [next]);
     } else {
       // Evita animazione ridondante se lo slug è lo stesso
       const currentSlug = document.documentElement.getAttribute('data-wf-item-slug');
@@ -1617,6 +1669,7 @@ barba.hooks.beforeLeave(() => {
 barba.hooks.enter((data) => {
   resetScroll();
   resetWebflow(data);
+  addCommaBetweenTwoTags();
 
   gsap.set(data.next.container, {
     position: "fixed",
