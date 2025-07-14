@@ -199,7 +199,7 @@ function initMenu() {
         .to(menu, { yPercent: -110 }, "<");
       // Always re-select main to ensure it's fresh after Barba transitions
       let main = document.querySelector('[data-barba="container"]');
-      tl.to(main, { y: 0 }, "<")
+      tl.to(main, { y: 0 }, "-=0.1")
         .to(menuButtonLayout, { yPercent: 0, duration: 0.7, ease: "power3.out" }, "<")
         .set(navWrap, { display: "none" });
     };
@@ -1123,7 +1123,6 @@ function initThemeScroll(next) {
               gsap.to("body", {
                 ...themeData,
                 duration: 0.4,
-                ease: "power1.out",
                 overwrite: "auto",
               });
             }
@@ -1158,44 +1157,65 @@ function resetTheme(next) {
   }
 }
 
-/*-------------- PARALLAX BACKGROUND -------------*/
-function initParallaxSections(next) {
+/*-------------- PARALLAX ELEMENT -------------*/
+function initParallaxElements(next) {
+  // Attivo solo su desktop (larghezza maggiore di 1024px)
+  if (window.innerWidth <= 1024) return;
+
   next = next || document;
 
-  next.querySelectorAll("[data-scroll-overlap='true']").forEach(section => {
-    if (section.dataset.scriptInitialized) return;
-    section.dataset.scriptInitialized = "true";
+  next.querySelectorAll("[data-parallax]").forEach(el => {
+    if (el.dataset.parallaxInitialized) return;
+    el.dataset.parallaxInitialized = "true";
 
-    const previousSection = section.previousElementSibling;
-    if (!previousSection) {
-      console.warn("No previous section found for", section);
-      return;
-    }
+    const speed = parseFloat(el.dataset.parallax);
+    if (isNaN(speed)) return;
 
-    // Assicurati che il previousSection stia dietro
-    gsap.set(previousSection, {
-      position: "relative",
-      zIndex: 0,
-    });
-
-    gsap.set(section, {
-      position: "relative",
-      zIndex: 1,
-    });
-
-    gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: () =>
-          section.offsetHeight < window.innerHeight
-            ? "bottom " + window.innerHeight
-            : "top " + window.innerHeight,
-        end: "top top",
-        scrub: true
+    gsap.fromTo(
+      el,
+      { y: 0 },
+      {
+        y: () => window.innerHeight * speed * -1,
+        ease: "none",
+        scrollTrigger: {
+          trigger: el,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true
+        }
       }
-    }).to(previousSection, { y: "30vh", ease: "none" });
+    );
   });
 }
+
+  function initProjectImageHoverEffect() {
+    const isMouseDevice = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (!isMouseDevice) return;
+
+    $('.projects_gallery_item').each(function () {
+      const $item = $(this);
+      const $img = $item.find('.g_visual_img');
+
+      $item.on('mouseenter', function () {
+        gsap.to($img, {
+          scale: 1.035,
+          duration: 0.,
+          ease: 'power2.out',
+          overwrite: 'auto',
+          transformOrigin: 'center center'
+        });
+      });
+
+      $item.on('mouseleave', function () {
+        gsap.to($img, {
+          scale: 1,
+          duration: 0.5,
+          ease: 'power2.out',
+          overwrite: 'auto'
+        });
+      });
+    });
+  }
 
 
 /*==========================================*\
@@ -1228,6 +1248,7 @@ function initProjectsAnimations(next) {
   //initCircleAnimation(next);
   initDividerReveal(next);
   initImageReveal(next);
+  initProjectImageHoverEffect();
 }
 
 function initSingleProjectAnimations(next) {
@@ -1247,7 +1268,7 @@ function initStudioAnimations(next) {
   initDividerReveal(next);
   initImageReveal(next);
   initThemeScroll(next);
-  initParallaxSections(next);
+  initParallaxElements(next);
 }
 
 function initProcessAnimations(next) {
