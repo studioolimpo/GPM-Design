@@ -1080,12 +1080,12 @@ function fadeInOnScroll(next) {
     gsap.fromTo(el,
       {
         autoAlpha: 0,
-        y: "3.5rem"
+        yPercent: 15,
       },
       {
         autoAlpha: 1,
-        y: 0,
-        duration: 1.2,
+        yPercent: 0,
+        duration: 1.1,
         ease: "power3.out",
         scrollTrigger: {
           trigger: el,
