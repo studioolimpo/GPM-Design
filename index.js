@@ -1085,7 +1085,7 @@ function fadeInOnScroll(next) {
       {
         autoAlpha: 1,
         y: 0,
-        duration: 1.5,
+        duration: 1.2,
         ease: "power3.out",
         scrollTrigger: {
           trigger: el,
