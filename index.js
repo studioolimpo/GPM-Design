@@ -185,24 +185,25 @@ function initMenu() {
         .fromTo(bgPanels, { yPercent: -101 }, { yPercent: 0, duration: 1, ease:bgPanelEase  }, "<");
       // Always re-select main to ensure it's fresh after Barba transitions
       let main = document.querySelector('[data-barba="container"]');
-      tl.fromTo(main, {y: 0},{y: "10rem", duration: 1, ease: bgPanelEase },"<")
-        .fromTo(menuList, { yPercent: 20 }, { yPercent: 0 }, "<0.4")
+      tl.fromTo(main, {y: 0},{y: "10rem", duration: 0.7, ease: bgPanelEase },"<0.2")
+        .fromTo(menuList, { yPercent: 20 }, { yPercent: 0 }, "<0.3")
         .fromTo(menuDivider, { opacity: 0, transformOrigin: "left" }, { opacity: 1, stagger: 0.01 , duration: 0.7 }, "<")
         .fromTo(menuIndexs, {autoAlpha: 0 }, { autoAlpha: 1, duration: 0.7, stagger: 0.05 }, "<")
         .fromTo(menuLinks, { autoAlpha: 0, }, { autoAlpha: 1, duration: 0.9, stagger: 0.05 }, "<0.1");
     };
 
     const closeNav = () => {
-      navWrap.setAttribute("data-nav", "closed");
-      tl.clear()
-        .to(overlay, { autoAlpha: 0 })
-        .to(menu, { yPercent: -110 }, "<");
-      // Always re-select main to ensure it's fresh after Barba transitions
-      let main = document.querySelector('[data-barba="container"]');
-      tl.to(main, { y: 0, duration: 0.6 }, "<")
-        .to(menuButtonLayout, { yPercent: 0, duration: 0.7, ease: "power3.out" }, "<")
-        .set(navWrap, { display: "none" });
-    };
+  navWrap.setAttribute("data-nav", "closed");
+  tl.clear();
+
+  const main = document.querySelector('[data-barba="container"]');
+
+  tl.to(overlay, { autoAlpha: 0 })
+    .to(main, { y: 0, duration: 0.7, ease: bgPanelEase }, "<")
+    .to(menu, { yPercent: -110, duration: 1, ease: bgPanelEase }, "<")
+    .to(menuButtonLayout, { yPercent: 0, duration: 0.7, ease: "power3.out" }, "<")
+    .set(navWrap, { display: "none" });
+};
 
     const transitionNav = () => {
         navWrap.setAttribute("data-nav", "closed");
@@ -572,9 +573,8 @@ function Signature() {
   }
   
 function addCommaBetweenTwoTags(context = document) {
-  // Aggiungi tutte le classi wrapper rilevanti
   const wraps = context.querySelectorAll(
-    ".hero_project_tag_wrapper, .projects_group, .slider_tag_wrapper" // ← aggiungi qui il wrapper usato nello slider
+    ".hero_project_tag_wrapper, .projects_group, .slider_tag_wrapper"
   );
 
   console.log(`🔍 Trovati ${wraps.length} gruppi totali`);
@@ -582,19 +582,79 @@ function addCommaBetweenTwoTags(context = document) {
   wraps.forEach(wrap => {
     const tagTexts = wrap.querySelectorAll(".hero_project_tag_text");
 
-    if (tagTexts.length === 2) {
+    if (tagTexts.length >= 2) {
       const first = tagTexts[0];
+      const second = tagTexts[1];
 
-      if (!first.dataset.commaAdded) {
-        first.textContent = first.textContent.trim() + ", ";
-        first.dataset.commaAdded = "true";
-        console.log(`✅ Virgola aggiunta a "${first.textContent}"`);
-      }
+      // Pulisce eventuali virgole precedenti
+      first.textContent = first.textContent.replace(/,\s*$/, "").trim();
+
+      // Aggiunge la virgola finale
+      first.textContent += ", ";
+
+      console.log(`✅ Virgola aggiunta tra "${first.textContent}" e "${second.textContent}"`);
+    } else {
+      console.log("ℹ️ Meno di 2 tag, nessuna virgola aggiunta");
     }
   });
 }
 
+function initLanguageSwitcher() {
+  document.querySelectorAll("a[href]").forEach((link) => {
+    link.removeEventListener("click", handleLangSwitch);
+    link.addEventListener("click", handleLangSwitch);
+  });
+}
 
+function handleLangSwitch(e) {
+  const link = e.currentTarget;
+  const href = link.getAttribute("href");
+  if (!href || href.startsWith("#") || link.target === "_blank") return;
+
+  const currentURL = new URL(window.location.href);
+  const nextURL = new URL(href, window.location.origin);
+
+  // Se stai cliccando sullo stesso URL attuale, non fare nulla
+  if (currentURL.pathname === nextURL.pathname) {
+    console.log("ℹ️ Link uguale alla pagina attuale – nessuna azione");
+    return;
+  }
+
+  const currentLang = currentURL.pathname.startsWith("/en") ? "en" : "it";
+  const nextLang = nextURL.pathname.startsWith("/en") ? "en" : "it";
+
+  const normalizePath = path => path.replace(/^\/en/, "").replace(/\/$/, "");
+  const currentPathNormalized = normalizePath(currentURL.pathname);
+  const nextPathNormalized = normalizePath(nextURL.pathname);
+
+  const isSamePath = currentPathNormalized === nextPathNormalized;
+  const isLangChange = currentLang !== nextLang;
+
+  if (isSamePath && isLangChange) {
+    e.preventDefault();
+    console.log("🌐 Cambio lingua rilevato – reload forzato");
+
+    // Disattiva temporaneamente barba per evitare transizione
+    barba.destroy();
+    window.location.href = nextURL.href;
+  }
+}
+
+function preventSamePageClicks() {
+  $("a").off("click.preventSamePage").on("click.preventSamePage", function (e) {
+    const destination = $(this).attr("href");
+    const currentLocation = window.location.pathname;
+
+    if (
+      destination === currentLocation ||
+      destination === currentLocation + "#" ||
+      destination === currentLocation + window.location.search
+    ) {
+      e.preventDefault();
+      console.log("🔁 Link alla stessa pagina – clic ignorato");
+    }
+  });
+}
 
 
 /*==========================================*\
@@ -1277,6 +1337,8 @@ function initFirstLoading(){
   initMenu();
   initCustomCursor();
   initDynamicCurrentYear();
+  initLanguageSwitcher();
+  preventSamePageClicks();
   if (shouldRevealFooter()) {
   initFooterReveal();
   }
@@ -1412,8 +1474,7 @@ function initProjectsGallerySliders(next) {
 /*--------------- BARBA  ----------------*/
 barba.init({
   preventRunning: true,
-  //debug: true,
-  prefetch: true,
+  //prefetch: true,
   transitions: [
   {
     name: "default",
@@ -1454,15 +1515,15 @@ barba.init({
       initFirstLoading();         
       cmsNest();                  
       runSplit(next);
-      addCommaBetweenTwoTags();
+      gsap.delayedCall(0.2, addCommaBetweenTwoTags, [next]);  
       gsap.delayedCall(0.1, initHeroHomeAnimation, [next]);
       gsap.delayedCall(0.4, resetTheme, [next]);
       document.fonts.ready.then(() => {
         gsap.delayedCall(0.3, initHomeAnimations, [next]);
       });
     } else {
-      cmsNest();                    // sempre utile
-      runSplit(next);              // split solo sul nuovo container
+      cmsNest();                 
+      runSplit(next);              
       gsap.delayedCall(0.1, initHeroHomeAnimation, [next]);
       gsap.delayedCall(0.4, resetTheme, [next]);
     }
@@ -1487,7 +1548,7 @@ barba.init({
       initFirstLoading();               
       cmsNest();                    
       runSplit(document); 
-      addCommaBetweenTwoTags();           
+      gsap.delayedCall(0.2, addCommaBetweenTwoTags, [next]);          
       gsap.delayedCall(0.2, resetTheme, [next]);
       gsap.delayedCall(0.6, initHeroProjectsAnimation, [next]);
       gsap.delayedCall(3.3, initProjectsAnimations, [next]);
@@ -1537,7 +1598,7 @@ barba.init({
       initFirstLoading();
       cmsNest();
       runSplit(document);
-      addCommaBetweenTwoTags();
+      gsap.delayedCall(0.2, () => addCommaBetweenTwoTags(document));
       gsap.delayedCall(0.7, () => initHeroSingleProjectAnimation(document));
       gsap.delayedCall(0.2, () => resetTheme(nextContainer));
       gsap.delayedCall(3, initSingleProjectAnimations, [nextContainer]);
@@ -1547,6 +1608,7 @@ barba.init({
     // Navigazione tra progetti diversi o arrivo da un'altra pagina
     if (ranLoader && (fromOutside || slugChanged)) {
       runSplit(nextContainer);
+      cmsNest();
       addCommaBetweenTwoTags();
       gsap.delayedCall(0.7, () => initHeroSingleProjectAnimation(nextContainer));
       gsap.delayedCall(0.2, () => resetTheme(nextContainer));
@@ -1562,6 +1624,7 @@ barba.init({
     if (!ranLoader || previousNamespace !== 'single-project') {
       // Esegui sempre se arrivi da fuori
       gsap.delayedCall(0.1, initSingleProjectAnimations, [next]);
+      
     } else {
       // Evita animazione ridondante se lo slug è lo stesso
       const currentSlug = document.documentElement.getAttribute('data-wf-item-slug');
@@ -1661,6 +1724,8 @@ barba.init({
   ]
 });
 
+
+
 barba.hooks.beforeLeave(() => {
   destroyFooterReveal();
 });
@@ -1669,7 +1734,7 @@ barba.hooks.beforeLeave(() => {
 barba.hooks.enter((data) => {
   resetScroll();
   resetWebflow(data);
-  addCommaBetweenTwoTags();
+  
 
   gsap.set(data.next.container, {
     position: "fixed",
@@ -1682,6 +1747,9 @@ barba.hooks.enter((data) => {
 barba.hooks.afterEnter(() => {
   Signature();
   initDynamicCurrentYear();
+  initLanguageSwitcher();
+  addCommaBetweenTwoTags();
+  
 });
 
 // Hook: reset finale dopo transizione
