@@ -609,7 +609,6 @@ function initLanguageSwitcher() {
 function handleLangSwitch(e) {
   const link = e.currentTarget;
   const href = link.getAttribute("href");
-
   if (!href || href.startsWith("#") || link.target === "_blank") return;
 
   const currentURL = new URL(window.location.href);
@@ -618,29 +617,21 @@ function handleLangSwitch(e) {
   const currentLang = currentURL.pathname.startsWith("/en") ? "en" : "it";
   const nextLang = nextURL.pathname.startsWith("/en") ? "en" : "it";
 
-  const normalize = path => path.replace(/^\/(en)?/, "").replace(/\/$/, "");
-  const currentPath = normalize(currentURL.pathname);
-  const nextPath = normalize(nextURL.pathname);
+  // Normalizzazione: rimuove '/en' iniziale e slash finale o singolo slash
+  const normalizePath = path => path.replace(/^\/en/, "").replace(/\/$/, "").replace(/^\/$/, "");
 
-  const isSamePath = currentPath === nextPath;
+  const currentPathNormalized = normalizePath(currentURL.pathname);
+  const nextPathNormalized = normalizePath(nextURL.pathname);
+
+  const isSamePath = currentPathNormalized === nextPathNormalized;
   const isLangChange = currentLang !== nextLang;
 
-  // 🔄 Se stessa lingua e stesso path, non fare nulla
-  if (currentURL.pathname === nextURL.pathname) {
-    console.log("ℹ️ Link identico – nessuna azione");
-    e.preventDefault(); // evita animazioni inutili
-    return;
-  }
-
-  // 🌐 Cambio lingua sulla stessa pagina → forzo reload
   if (isSamePath && isLangChange) {
     e.preventDefault();
-    console.log("🌍 Cambio lingua rilevato – forzo reload");
+    console.log("🌐 Cambio lingua rilevato – reload forzato");
 
-    if (window.barba && barba.destroy) {
-      barba.destroy(); // disattiva Barba prima del cambio
-    }
-
+    // Disattiva temporaneamente barba per evitare transizione
+    barba.destroy();
     window.location.href = nextURL.href;
   }
 }
@@ -1503,7 +1494,7 @@ barba.init({
       const coverWrap = data.next.container.querySelector(".transition_wrap");
       tl.set(coverWrap, { opacity: 0 });
       
-      tl.to(data.current.container, { y: "-30vh", opacity: 0});
+      tl.to(data.current.container, { y: "-30vh"});
       tl.from(data.next.container, { y: "100vh" }, "<");
 
       return tl;
