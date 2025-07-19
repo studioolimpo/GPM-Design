@@ -201,15 +201,15 @@ function initMenu() {
   tl.to(overlay, { autoAlpha: 0 })
     .to(main, { y: 0, duration: 0.7, ease: bgPanelEase }, "<")
     .to(menu, { yPercent: -110, duration: 1, ease: bgPanelEase }, "<")
-    .to(menuButtonLayout, { yPercent: 0, duration: 0.7, ease: "power3.out" }, "<")
+    .to(menuButtonLayout, { yPercent: 0 }, "<")
     .set(navWrap, { display: "none" });
 };
 
     const transitionNav = () => {
         navWrap.setAttribute("data-nav", "closed");
         tl.clear()
-          .to(overlay, { autoAlpha: 0, delay: 0.3 })
-          // .to(navTransition, { autoAlpha: 1, duration: 0.5 }, "<")
+          .to(overlay, { autoAlpha: 0, delay: 0.1 })
+          //.to(navTransition, { autoAlpha: 1, duration: 0.5 }, "<")
           .to(menu, { yPercent: -110, duration:0.9 , ease: "power2.out" }, "<")
           .to(menuButtonLayout, { yPercent: 0, duration: 0.7, ease: "power3.out" }, "<0.2")
           .set(navWrap, { display: "none" });
@@ -248,7 +248,7 @@ function initMenu() {
         lenis.start();
       } else {
         e.preventDefault();
-          transitionNav();
+          gsap.delayedCall(0.3, transitionNav);
           lenis.start();
       }
     }
@@ -1477,28 +1477,27 @@ barba.init({
   //prefetch: true,
   transitions: [
   {
-    name: "default",
     sync: true,
     leave(data) {
       const tl = gsap.timeline({
-        defaults: { duration: 0.9, ease: "power2.out" },
+        defaults: { duration: 1, ease: "power.out" },
       });
 
       const coverWrap = data.current.container.querySelector(".transition_wrap");
 
-      tl.to(coverWrap, { opacity: 1 }, 0);
+      tl.to(coverWrap, { opacity: 1 });
 
       return tl;
     },
     enter(data) {
       const tl = gsap.timeline({
-        defaults: { duration: 0.9, ease: "power2.out" },
+        defaults: { duration: 1, ease: "power2.out" },
       });
 
       const coverWrap = data.next.container.querySelector(".transition_wrap");
-
       tl.set(coverWrap, { opacity: 0 });
-      tl.to(data.current.container, { opacity: 0, duration: 0.6, y: "-10vh" });
+      
+      tl.to(data.current.container, { opacity: 0});
       tl.from(data.next.container, { y: "100vh" }, "<");
 
       return tl;
@@ -1725,23 +1724,21 @@ barba.init({
 });
 
 
-
 barba.hooks.beforeLeave(() => {
   destroyFooterReveal();
 });
 
 
 barba.hooks.enter((data) => {
-  resetScroll();
-  resetWebflow(data);
-  
-
-  gsap.set(data.next.container, {
+   
+gsap.set(data.next.container, {
     position: "fixed",
     top: 0,
     left: 0,
     width: "100%"
   });
+  
+  resetScroll(); 
 });
 
 barba.hooks.afterEnter(() => {
@@ -1752,16 +1749,15 @@ barba.hooks.afterEnter(() => {
   
 });
 
-// Hook: reset finale dopo transizione
 barba.hooks.after((data) => {
-
-  
   gsap.set(data.next.container, { position: "relative" });
+  $(window).scrollTop(0);
+  resetWebflow(data);
+  
 
-  if (shouldRevealFooter()) {
+    if (shouldRevealFooter()) {
     initFooterReveal();
   }
-
 
   $(window).scrollTop(0);
 
@@ -1769,4 +1765,11 @@ barba.hooks.after((data) => {
         lenis.scrollTo(0, { immediate: true });
         lenis.resize();
       }
+});
+
+// Hook: reset finale dopo transizione
+barba.hooks.after((data) => {
+
+  gsap.set(data.next.container, { position: "relative" });
+
 });
