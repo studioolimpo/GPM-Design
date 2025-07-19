@@ -609,33 +609,38 @@ function initLanguageSwitcher() {
 function handleLangSwitch(e) {
   const link = e.currentTarget;
   const href = link.getAttribute("href");
+
   if (!href || href.startsWith("#") || link.target === "_blank") return;
 
   const currentURL = new URL(window.location.href);
   const nextURL = new URL(href, window.location.origin);
 
-  // Se stai cliccando sullo stesso URL attuale, non fare nulla
-  if (currentURL.pathname === nextURL.pathname) {
-    console.log("ℹ️ Link uguale alla pagina attuale – nessuna azione");
-    return;
-  }
-
   const currentLang = currentURL.pathname.startsWith("/en") ? "en" : "it";
   const nextLang = nextURL.pathname.startsWith("/en") ? "en" : "it";
 
-  const normalizePath = path => path.replace(/^\/en/, "").replace(/\/$/, "");
-  const currentPathNormalized = normalizePath(currentURL.pathname);
-  const nextPathNormalized = normalizePath(nextURL.pathname);
+  const normalize = path => path.replace(/^\/(en)?/, "").replace(/\/$/, "");
+  const currentPath = normalize(currentURL.pathname);
+  const nextPath = normalize(nextURL.pathname);
 
-  const isSamePath = currentPathNormalized === nextPathNormalized;
+  const isSamePath = currentPath === nextPath;
   const isLangChange = currentLang !== nextLang;
 
+  // 🔄 Se stessa lingua e stesso path, non fare nulla
+  if (currentURL.pathname === nextURL.pathname) {
+    console.log("ℹ️ Link identico – nessuna azione");
+    e.preventDefault(); // evita animazioni inutili
+    return;
+  }
+
+  // 🌐 Cambio lingua sulla stessa pagina → forzo reload
   if (isSamePath && isLangChange) {
     e.preventDefault();
-    console.log("🌐 Cambio lingua rilevato – reload forzato");
+    console.log("🌍 Cambio lingua rilevato – forzo reload");
 
-    // Disattiva temporaneamente barba per evitare transizione
-    barba.destroy();
+    if (window.barba && barba.destroy) {
+      barba.destroy(); // disattiva Barba prima del cambio
+    }
+
     window.location.href = nextURL.href;
   }
 }
