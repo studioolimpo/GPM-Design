@@ -1474,7 +1474,8 @@ function initProjectsGallerySliders(next) {
 /*--------------- BARBA  ----------------*/
 barba.init({
   preventRunning: true,
-  //prefetch: true,
+  timeout: 8000,
+  prefetch: true,
   transitions: [
   {
     sync: true,
@@ -1497,7 +1498,7 @@ barba.init({
       const coverWrap = data.next.container.querySelector(".transition_wrap");
       tl.set(coverWrap, { opacity: 0 });
       
-      tl.to(data.current.container, { opacity: 0});
+      tl.to(data.current.container, { y: "-30vh", opacity: 0});
       tl.from(data.next.container, { y: "100vh" }, "<");
 
       return tl;
@@ -1737,7 +1738,7 @@ gsap.set(data.next.container, {
     left: 0,
     width: "100%"
   });
-  
+
   resetScroll(); 
 });
 
