@@ -208,7 +208,7 @@ function initMenu() {
     const transitionNav = () => {
         navWrap.setAttribute("data-nav", "closed");
         tl.clear()
-          .to(overlay, { autoAlpha: 0, delay: 0.1 })
+          .to(overlay, { autoAlpha: 0, delay: 0.3 })
           //.to(navTransition, { autoAlpha: 1, duration: 0.5 }, "<")
           .to(menu, { yPercent: -110, duration:0.9 , ease: "power2.out" }, "<")
           .to(menuButtonLayout, { yPercent: 0, duration: 0.7, ease: "power3.out" }, "<0.2")
@@ -1736,15 +1736,18 @@ barba.init({
         if (!ranLoader) {
           initFirstLoading();
           runSplit(document);
-        }
+          gsap.delayedCall(0.4, initHeroContactAnimation, [next]);
+          gsap.delayedCall(0.2, initContactAnimations, [next]);
+        } else {
         runSplit(next);
-        gsap.delayedCall(0.4, initHeroContactAnimation, [next]);
+        gsap.delayedCall(0.2, initHeroContactAnimation, [next]);
         gsap.delayedCall(0.2, resetTheme, [next]);
+        }
       },
       afterEnter(data) {
         let next = data.next.container;
         gsap.delayedCall(0.2, initContactAnimations, [next]);
-        gsap.delayedCall(0.3, SubmitSuccessPopup, [next]);
+        gsap.delayedCall(0.4, SubmitSuccessPopup, [next]);
       }
     },
     {
