@@ -234,27 +234,28 @@ function initMenu() {
     });
 
     $("a").on("click", function (e) {
-    const href = $(this).attr("href");
-    const isSameHost = $(this).prop("hostname") === window.location.host;
-    const isNotHash = href.indexOf("#") === -1;
-    const isNotBlank = $(this).attr("target") !== "_blank";
-    const isNavOpen = navWrap.getAttribute("data-nav") === "open";
+      const href = $(this).attr("href");
+      const isSameHost = $(this).prop("hostname") === window.location.host;
+      const isNotHash = href.indexOf("#") === -1;
+      const isNotBlank = $(this).attr("target") !== "_blank";
+      const isNavOpen = navWrap.getAttribute("data-nav") === "open";
+      const isLangSwitcher = $(this).closest(".footer_switcher_wrapper").length > 0;
 
-    const currentPath = window.location.pathname.replace(/\/$/, "");
-    const targetPath = new URL(href, window.location.origin).pathname.replace(/\/$/, "");
+      const currentPath = window.location.pathname.replace(/\/$/, "");
+      const targetPath = new URL(href, window.location.origin).pathname.replace(/\/$/, "");
 
-    if (isSameHost && isNotHash && isNotBlank && isNavOpen) {
-      if (currentPath === targetPath) {
-        e.preventDefault();
-        closeNav();
-        lenis.start();
-      } else {
-        e.preventDefault();
+      if (isSameHost && isNotHash && isNotBlank && isNavOpen && !isLangSwitcher) {
+        if (currentPath === targetPath) {
+          e.preventDefault();
+          closeNav();
+          lenis.start();
+        } else {
+          e.preventDefault();
           transitionNav();
           lenis.start();
+        }
       }
-    }
-  });
+    });
 
 if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
     const listItems = navWrap.querySelectorAll(".nav_menu_link");
@@ -658,6 +659,40 @@ function preventSamePageClicks() {
   });
 }
 
+
+
+function updateLangSwitcherLinks() {
+  // Prendi SOLO l’ultimo footer switcher presente nel DOM
+  const footerSwitchers = document.querySelectorAll(".footer_switcher_wrapper:not(.is--nav)");
+  const footerSwitcher = footerSwitchers[footerSwitchers.length - 1]; // ← quello più recente
+
+  const navSwitcher = document.querySelector(".footer_switcher_wrapper.is--nav");
+
+  if (!footerSwitcher || !navSwitcher) {
+    console.warn("⚠️ Footer o Nav switcher mancante");
+    return;
+  }
+
+  const footerLinks = footerSwitcher.querySelectorAll("a[href]");
+  const navLinks = navSwitcher.querySelectorAll("a[href]");
+
+  console.log("📦 Footer links:", footerLinks.length, footerLinks);
+  console.log("📦 Nav links:", navLinks.length, navLinks);
+
+  if (footerLinks.length !== navLinks.length) {
+    console.warn("⚠️ Il numero di link nei due switcher non corrisponde");
+    return;
+  }
+
+  footerLinks.forEach((footerLink, index) => {
+    const href = footerLink.getAttribute("href");
+    const navLink = navLinks[index];
+    if (navLink) {
+      console.log(`🔁 Aggiorno link nav [${index}] → ${href}`);
+      navLink.setAttribute("href", href);
+    }
+  });
+}
 
 /*==========================================*\
   ================ HERO ANIMATION ==============
@@ -1341,6 +1376,7 @@ function initFirstLoading(){
   initDynamicCurrentYear();
   initLanguageSwitcher();
   preventSamePageClicks();
+  updateLangSwitcherLinks();
   if (shouldRevealFooter()) {
   initFooterReveal();
   }
@@ -1524,7 +1560,7 @@ barba.init({
       runSplit(next);
       gsap.delayedCall(0.2, addCommaBetweenTwoTags, [next]);  
       gsap.delayedCall(0.1, initHeroHomeAnimation, [next]);
-      gsap.delayedCall(0.4, resetTheme, [next]);
+      gsap.delayedCall(0.2, resetTheme, [next]);
       document.fonts.ready.then(() => {
         gsap.delayedCall(0.3, initHomeAnimations, [next]);
       });
@@ -1650,11 +1686,11 @@ barba.init({
     if (!ranLoader) {
       initFirstLoading(); 
       runSplit(document);    
-      gsap.delayedCall(0.2, initHeroStudioAnimation, [next]);
+      gsap.delayedCall(0.6, initHeroStudioAnimation, [next]);
       gsap.delayedCall(0.6, initStudioAnimations, [next]);
     } else {
       runSplit(next);          
-      gsap.delayedCall(0.3, initHeroStudioAnimation, [next]);
+      gsap.delayedCall(0.5, initHeroStudioAnimation, [next]);
     }
   },
 
@@ -1662,7 +1698,7 @@ barba.init({
     const next = data.next.container;
 
     if (ranLoader) {
-      gsap.delayedCall(0.6, initStudioAnimations, [next]);
+      gsap.delayedCall(0.8, initStudioAnimations, [next]);
     }
   }
 },
@@ -1757,7 +1793,7 @@ barba.hooks.afterEnter(() => {
   initDynamicCurrentYear();
   initLanguageSwitcher();
   addCommaBetweenTwoTags();
-  
+  updateLangSwitcherLinks();
 });
 
 barba.hooks.after((data) => {
