@@ -550,7 +550,7 @@ function SubmitSuccessPopup() {
       duration: 1.1,
       ease: bgPanelEase,
       yPercent: -101,
-      delay: 1.6,
+      delay: 2,
       onStart: () => {
         if (lenis) lenis.start();
         if (window.barba) {
