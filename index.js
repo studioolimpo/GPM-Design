@@ -580,8 +580,6 @@ function addCommaBetweenTwoTags(context = document) {
     ".hero_project_tag_wrapper, .projects_group, .slider_tag_wrapper"
   );
 
-  console.log(`🔍 Trovati ${wraps.length} gruppi totali`);
-
   wraps.forEach(wrap => {
     const tagTexts = wrap.querySelectorAll(".hero_project_tag_text");
 
@@ -595,9 +593,7 @@ function addCommaBetweenTwoTags(context = document) {
       // Aggiunge la virgola finale
       first.textContent += ", ";
 
-      console.log(`✅ Virgola aggiunta tra "${first.textContent}" e "${second.textContent}"`);
     } else {
-      console.log("ℹ️ Meno di 2 tag, nessuna virgola aggiunta");
     }
   });
 }
@@ -619,7 +615,6 @@ function handleLangSwitch(e) {
 
   // Se stai cliccando sullo stesso URL attuale, non fare nulla
   if (currentURL.pathname === nextURL.pathname) {
-    console.log("ℹ️ Link uguale alla pagina attuale – nessuna azione");
     return;
   }
 
@@ -635,7 +630,6 @@ function handleLangSwitch(e) {
 
   if (isSamePath && isLangChange) {
     e.preventDefault();
-    console.log("🌐 Cambio lingua rilevato – reload forzato");
 
     // Disattiva temporaneamente barba per evitare transizione
     barba.destroy();
@@ -654,7 +648,6 @@ function preventSamePageClicks() {
       destination === currentLocation + window.location.search
     ) {
       e.preventDefault();
-      console.log("🔁 Link alla stessa pagina – clic ignorato");
     }
   });
 }
@@ -669,18 +662,14 @@ function updateLangSwitcherLinks() {
   const navSwitcher = document.querySelector(".footer_switcher_wrapper.is--nav");
 
   if (!footerSwitcher || !navSwitcher) {
-    console.warn("⚠️ Footer o Nav switcher mancante");
     return;
   }
 
   const footerLinks = footerSwitcher.querySelectorAll("a[href]");
   const navLinks = navSwitcher.querySelectorAll("a[href]");
 
-  console.log("📦 Footer links:", footerLinks.length, footerLinks);
-  console.log("📦 Nav links:", navLinks.length, navLinks);
 
   if (footerLinks.length !== navLinks.length) {
-    console.warn("⚠️ Il numero di link nei due switcher non corrisponde");
     return;
   }
 
@@ -688,7 +677,6 @@ function updateLangSwitcherLinks() {
     const href = footerLink.getAttribute("href");
     const navLink = navLinks[index];
     if (navLink) {
-      console.log(`🔁 Aggiorno link nav [${index}] → ${href}`);
       navLink.setAttribute("href", href);
     }
   });
@@ -790,7 +778,6 @@ function initHeroSingleProjectAnimation(next) {
       linesClass: "line",
     }).lines;
   } catch (e) {
-    console.warn("SplitText failed:", e);
     return;
   }
   if (!lines.length) return;
@@ -1461,7 +1448,6 @@ function initProjectsGallerySliders(next) {
   }
 
   if (typeof Swiper === "undefined") {
-    console.warn("Swiper non è disponibile");
     return;
   }
 
